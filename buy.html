@@ -12,7 +12,7 @@
 
   <header class="logo-header">
     <div class="logo-group">
-      <img src="pictures/march%20madness.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
+      <img src="pictures/logo.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
       <div class="logo-text-wrapper">
         <span class="logo-ftc">FTC</span>
         <span class="logo-presents">presents</span>
@@ -26,11 +26,11 @@
 
   <div class="form-block">
     <div class="batch-tag" id="priceTag">
-      <i class="fas fa-clock"></i> EARLY BIRD · LOADING...
+      <i class="fas fa-clock"></i> WINNERS FC · LOADING...
     </div>
     
     <h2>BUY TICKET</h2>
-    
+    <h3> This ticket permits one person to enter <b>'March Madness'</b> hosted by FTC. Doors open at 6pm and you are welcome to come at after that to experience the burti.<br><br><br></h3>
     <form id="ticketForm">
       <input type="text" id="name" placeholder="FULL NAME" required>
       <input type="email" id="email" placeholder="EMAIL ADDRESS" required>
@@ -51,7 +51,7 @@
   </div>
 
   <footer>
-    <p>FTC · MARCH MADNESS · support@ftcmarch.com · +234 802 222 3344</p>
+    <p>FTC · MARCH MADNESS · support@ftcmarch.com · +234 8082420342</p>
   </footer>
 
   <script>
@@ -63,7 +63,7 @@
           const price = data.data.price;
           const available = data.data.available;
           
-          document.getElementById('priceTag').innerHTML = `<i class="fas fa-clock"></i> EARLY BIRD · ₦${price.toLocaleString()}`;
+          document.getElementById('priceTag').innerHTML = `<i class="fas fa-clock"></i> WINNERS FC· ₦${price.toLocaleString()}`;
           document.getElementById('availabilityNotice').innerHTML = `<i class="fas fa-info-circle"></i> ${available} tickets left · early bird price`;
           document.getElementById('submitBtn').innerHTML = `<i class="fas fa-lock"></i> PAY ₦${price.toLocaleString()} NOW`;
           
@@ -76,8 +76,8 @@
       })
       .catch(error => {
         console.error('Error:', error);
-        document.getElementById('priceTag').innerHTML = '<i class="fas fa-clock"></i> EARLY BIRD · ₦8,000';
-        document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> Early bird · limited tickets';
+        document.getElementById('priceTag').innerHTML = '<i class="fas fa-clock"></i> WINNERS FC · ₦8,000';
+        document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> Winners Fc · limited tickets';
       });
 
     // Handle form submission - FIXED

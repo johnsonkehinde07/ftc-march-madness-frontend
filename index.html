@@ -12,7 +12,7 @@
 
   <header class="logo-header">
     <div class="logo-group">
-      <img src="pictures/march%20madness.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
+      <img src="pictures/logo.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
       <div class="logo-text-wrapper">
         <span class="logo-ftc">FTC</span>
         <span class="logo-presents">presents</span>
@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="nav-accent">
-      <span><i class="fas fa-fire"></i> EARLY BIRD</span>
+      <span><i class="fas fa-fire"></i> WINNERS FC</span>
       <span><i class="fas fa-clock"></i> LIMITED</span>
     </div>
   </header>
@@ -36,7 +36,7 @@
      
       <div class="event-info">
         <span><i class="fas fa-calendar-alt"></i> 7 MARCH 2026</span>
-        <span><i class="fas fa-map-marker-alt"></i> BEACH HOUSE</span>
+        <span><i class="fas fa-map-marker-alt"></i> KODO BEACH HOUSE</span>
       </div>
       <a href="buy.html" class="btn">
         <i class="fas fa-bolt"></i> BUY TICKET
@@ -47,14 +47,14 @@
 
   <div class="details-grid">
     <div class="card">
-      <h3><i class="fas fa-ticket-alt"></i> EARLY BIRD</h3>
+      <h3><i class="fas fa-ticket-alt"></i> WINNERS FC</h3>
       <p>₦8,000</p>
-      <p class="note">limited time</p>
+      <p class="note">limited tickets</p>
     </div>
     <div class="card">
       <h3><i class="fas fa-clock"></i> DOORS OPEN</h3>
-      <p>4PM</p>
-      <p class="note">until sunrise</p>
+      <p>6PM</p>
+      <p class="note">till 12AM</p>
     </div>
     <div class="card">
       <h3><i class="fas fa-shield-alt"></i> PAYMENT</h3>
@@ -76,7 +76,7 @@
       <i class="fab fa-x-twitter"></i>
       <i class="fab fa-tiktok"></i>
     </div>
-    <p>FTC · MARCH MADNESS · events@ftcmarch.com · +234 802 222 3344</p>
+    <p>FTC · MARCH MADNESS · events@ftcmarch.com · +234 8082420342</p>
     <p class="copyright">© 2026 · FTC · ALL RIGHTS RESERVED</p>
   </footer>
 
@@ -86,13 +86,13 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          document.getElementById('priceDisplay').innerHTML = `early bird · ₦${data.data.price.toLocaleString()}`;
-          document.getElementById('availabilityDisplay').innerHTML = `⏤ ${data.data.available} TICKETS LEFT · EARLY BIRD ⏤`;
+          document.getElementById('priceDisplay').innerHTML = `winners fc· ₦${data.data.price.toLocaleString()}`;
+          document.getElementById('availabilityDisplay').innerHTML = `⏤ ${data.data.available} TICKETS LEFT · WINNERS FC ⏤`;
         }
       })
       .catch(error => {
         console.error('Error fetching availability:', error);
-        document.getElementById('availabilityDisplay').innerHTML = `⏤ EARLY BIRD · ₦8,000 ⏤`;
+        document.getElementById('availabilityDisplay').innerHTML = `⏤ WINNERS FC· ₦8,000 ⏤`;
       });
   </script>
 </body>

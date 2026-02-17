@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FTC · MARCH MADNESS</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="logo-header">
+    <div class="logo-group">
+      <img src="pictures/march%20madness.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
+      <div class="logo-text-wrapper">
+        <span class="logo-ftc">FTC</span>
+        <span class="logo-presents">presents</span>
+        <span class="logo-event">MARCH MADNESS</span>
+      </div>
+    </div>
+    <div class="nav-accent">
+      <span><i class="fas fa-fire"></i> EARLY BIRD</span>
+      <span><i class="fas fa-clock"></i> LIMITED</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-backdrop">
+      <img src="pictures/march%20madness.jpeg" alt="MARCH MADNESS" class="hero-image">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="pre-head">FTC · 2026</div>
+      <h1>MARCH<br>MADNESS</h1>
+     
+      <div class="event-info">
+        <span><i class="fas fa-calendar-alt"></i> 7 MARCH 2026</span>
+        <span><i class="fas fa-map-marker-alt"></i> BEACH HOUSE</span>
+      </div>
+      <a href="buy.html" class="btn">
+        <i class="fas fa-bolt"></i> BUY TICKET
+      </a>
+      <p class="wave-tag" id="availabilityDisplay">⏤ CHECKING AVAILABILITY... ⏤</p>
+    </div>
+  </section>
+
+  <div class="details-grid">
+    <div class="card">
+      <h3><i class="fas fa-ticket-alt"></i> EARLY BIRD</h3>
+      <p>₦8,000</p>
+      <p class="note">limited time</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-clock"></i> DOORS OPEN</h3>
+      <p>4PM</p>
+      <p class="note">until sunrise</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-shield-alt"></i> PAYMENT</h3>
+      <p>PAYSTACK</p>
+      <p class="note">100% secure</p>
+    </div>
+    <div class="card">
+      <h3><i class="fas fa-music"></i> LINEUP</h3>
+      <p>TBA</p>
+      <p class="note">coming soon</p>
+    </div>
+  </div>
+
+  <div class="ocean-line"></div>
+
+  <footer>
+    <div class="social-links">
+      <i class="fab fa-instagram"></i>
+      <i class="fab fa-x-twitter"></i>
+      <i class="fab fa-tiktok"></i>
+    </div>
+    <p>FTC · MARCH MADNESS · events@ftcmarch.com · +234 802 222 3344</p>
+    <p class="copyright">© 2026 · FTC · ALL RIGHTS RESERVED</p>
+  </footer>
+
+  <script>
+    // Fetch availability from backend
+    fetch('http://localhost:5000/api/tickets/availability')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('priceDisplay').innerHTML = `early bird · ₦${data.data.price.toLocaleString()}`;
+          document.getElementById('availabilityDisplay').innerHTML = `⏤ ${data.data.available} TICKETS LEFT · EARLY BIRD ⏤`;
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching availability:', error);
+        document.getElementById('availabilityDisplay').innerHTML = `⏤ EARLY BIRD · ₦8,000 ⏤`;
+      });
+  </script>
+</body>
+</html>

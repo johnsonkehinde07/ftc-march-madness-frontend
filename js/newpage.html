@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FTC · BEACH HOUSE</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ------------------------------------------------- */
+    /*  MASCULINE · COOL · SEXY · BEACH HOUSE EDGE      */
+    /*  raw textures, ocean grit, gold-hour light       */
+    /* ------------------------------------------------- */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --black: #0B0C10;
+      --charcoal: #1F2833;
+      --storm: #2C3E50;
+      --sand: #C6AD8F;
+      --wave: #0a2f44;
+      --gold: #B48C5C;
+      --glimmer: #D8B47C;
+      --foam: #EAEAEA;
+      --skin: #D2B48C;
+      --shadow: rgba(0,0,0,0.8);
+      --ocean-deep: #0B1A2B;
+    }
+
+    body {
+      background-color: var(--black);
+      background-image: 
+        linear-gradient(180deg, rgba(0,0,0,0.92) 0%, rgba(10,20,30,0.98) 100%),
+        url('https://images.pexels.com/photos/2161449/pexels-photo-2161449.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center 30%;
+      background-blend-mode: overlay;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      line-height: 1.5;
+      letter-spacing: 0.3px;
+    }
+
+    /* structure — raw, open, cinematic */
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ---------- HEADER : low-key power ---------- */
+    .logo-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      background: rgba(5,10,15,0.7);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(180, 140, 92, 0.25);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo-img {
+      height: 64px;
+      width: auto;
+      border-radius: 4px;
+      box-shadow: 0 0 16px rgba(180,140,92,0.2);
+      border: 1px solid rgba(216,180,124,0.3);
+    }
+
+    .logo-text {
+      font-size: 1.9rem;
+      font-weight: 900;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #f0e6d2;
+      text-shadow: 
+        0 0 10px rgba(180,140,92,0.7),
+        0 2px 0 #0B0C10;
+      -webkit-text-fill-color: white;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nav-accent {
+      display: flex;
+      gap: 32px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      color: var(--sand);
+    }
+    .nav-accent i {
+      margin-right: 6px;
+    }
+
+    /* ---------- HERO : salt, skin, bass ---------- */
+    .hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-bottom: 2px solid rgba(180,140,92,0.3);
+      overflow: hidden;
+    }
+
+    .hero-backdrop {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 70% 30%, rgba(44,62,80,0.2) 0%, rgba(11,12,16,0.9) 80%),
+                  url('https://images.pexels.com/photos/3319588/pexels-photo-3319588.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      background-position: center 40%;
+      filter: grayscale(0.6) contrast(1.2);
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      max-width: 1000px;
+      padding: 40px 20px;
+    }
+
+    .pre-head {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 12px;
+      font-weight: 800;
+      color: var(--glimmer);
+      margin-bottom: 16px;
+      text-shadow: 0 0 20px black;
+    }
+
+    .hero h1 {
+      font-size: 5.2rem;
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+      color: white;
+      text-shadow: 
+        0 4px 30px rgba(0,0,0,0.9),
+        0 0 0 2px rgba(180,140,92,0.3),
+        0 0 30px rgba(210,180,140,0.5);
+      margin-bottom: 20px;
+      letter-spacing: 8px;
+    }
+
+    .hero .sub {
+      font-size: 1.6rem;
+      font-weight: 300;
+      font-style: italic;
+      font-family: 'Playfair Display', serif;
+      color: var(--skin);
+      border-top: 1px solid rgba(216,180,124,0.6);
+      border-bottom: 1px solid rgba(216,180,124,0.6);
+      display: inline-block;
+      padding: 12px 28px;
+      letter-spacing: 2px;
+      text-transform: none;
+      backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .event-info {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 48px 0 32px;
+    }
+
+    .event-info span {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(10, 15, 20, 0.7);
+      backdrop-filter: blur(12px);
+      padding: 14px 28px;
+      border-radius: 60px;
+      border: 1px solid rgba(180,140,92,0.5);
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #fff;
+      box-shadow: 0 6px 18px black;
+    }
+
+    .event-info i {
+      color: var(--glimmer);
+    }
+
+    /* ----- BUTTON : weight, texture, presence ----- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: #0f1a1f;
+      border: 2px solid var(--gold);
+      color: white;
+      padding: 18px 52px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      text-decoration: none;
+      border-radius: 0px;
+      transition: 0.2s ease;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,215,140,0.2);
+      margin-top: 16px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .btn i {
+      font-size: 1.2rem;
+      color: var(--glimmer);
+    }
+
+    .btn:hover {
+      background: var(--gold);
+      border-color: white;
+      color: black;
+      box-shadow: 0 0 30px rgba(180,140,92,0.8);
+      transform: scale(1.03);
+    }
+
+    .btn:hover i {
+      color: black;
+    }
+
+    /* ---------- DETAILS / CARDS : brutal, oceanic ---------- */
+    .details-grid {
+      display: flex;
+      gap: 24px;
+      padding: 80px 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(5, 10, 15, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(180,140,92,0.4);
+      padding: 36px 24px;
+      width: 280px;
+      text-align: left;
+      transition: 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.5);
+      border-radius: 0;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translate(-6px, -6px);
+      box-shadow: 20px 20px 0 rgba(44,62,80,0.3);
+      border-color: var(--glimmer);
+      background: rgba(20, 30, 35, 0.9);
+    }
+
+    .card h3 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: var(--sand);
+      letter-spacing: 2px;
+      border-bottom: 2px solid rgba(216,180,124,0.4);
+      padding-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 2rem;
+      font-weight: 900;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .card .note {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: rgba(216,180,124,0.9);
+      letter-spacing: 3px;
+      margin-top: 12px;
+      font-weight: 400;
+    }
+
+    /* ---------- FORM : sharp, confident ---------- */
+    .form-block {
+      max-width: 650px;
+      margin: 80px auto;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(180,140,92,0.5);
+      padding: 48px 48px;
+      box-shadow: 20px 20px 0 #0B0C10;
+    }
+
+    .form-block h2 {
+      font-size: 2.6rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      margin-bottom: 40px;
+      color: var(--glimmer);
+      text-shadow: 0 0 12px black;
+      border-left: 8px solid var(--gold);
+      padding-left: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(216,180,124,0.4);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 500;
+      border-radius: 0;
+      transition: 0.15s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: rgba(20,20,20,0.9);
+      box-shadow: 0 0 30px rgba(180,140,92,0.3);
+    }
+
+    input::placeholder {
+      color: rgba(200,180,150,0.6);
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    /* ---------- STATUS PAGES : cinematic, raw ---------- */
+    .status-screen {
+      text-align: center;
+      max-width: 780px;
+      margin: 100px auto;
+      padding: 70px 40px;
+      background: rgba(8, 18, 22, 0.85);
+      backdrop-filter: blur(14px);
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 60px rgba(0,0,0,0.7);
+      position: relative;
+    }
+
+    .status-icon {
+      font-size: 5.8rem;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 20px rgba(180,140,92,0.7));
+    }
+
+    .status-screen h1 {
+      font-size: 3.2rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 8px;
+      margin-bottom: 24px;
+    }
+
+    .success h1 { color: #C6AD8F; text-shadow: 0 0 20px #6e5c48; }
+    .fail h1 { color: #a15e4e; text-shadow: 0 0 20px #6b2e22; }
+
+    .status-message {
+      font-size: 1.3rem;
+      color: #ccc;
+      margin-bottom: 36px;
+      font-weight: 300;
+    }
+
+    hr {
+      border: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 32px 0;
+    }
+
+    /* ---------- FOOTER : low end ---------- */
+    footer {
+      background: rgba(0,0,0,0.7);
+      border-top: 1px solid rgba(180,140,92,0.25);
+      padding: 40px 24px;
+      text-align: center;
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(198,173,143,0.7);
+    }
+
+    footer i {
+      color: var(--glimmer);
+      margin: 0 12px;
+      font-size: 1.2rem;
+    }
+
+    /* ---------- WAVE / TEXTURE : masculine, rough ---------- */
+    .ocean-line {
+      width: 100%;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, transparent, transparent 10px, var(--gold) 10px, var(--gold) 20px);
+      opacity: 0.4;
+    }
+
+    /* responsive bite */
+    @media (max-width: 900px) {
+      .hero h1 { font-size: 3.2rem; letter-spacing: 4px; }
+      .logo-text { font-size: 1.4rem; }
+      .logo-header { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== INDEX PAGE (BEACH HOUSE ROOT) ========== -->
+<!-- this structure merges the masculine-cool-sexy brief -->
+
+<header class="logo-header">
+  <div class="logo-group">
+    <img src="pictures/logo.jpeg" alt="FTC" class="logo-img" onerror="this.src='https://images.pexels.com/photos/3586966/pexels-photo-3586966.jpeg?auto=compress&cs=tinysrgb&w=600';">
+    <span class="logo-text">FTC · 26</span>
+  </div>
+  <div class="nav-accent">
+    <span><i class="fas fa-ship"></i> DEEP END</span>
+    <span><i class="fas fa-water"></i> SURGE</span>
+  </div>
+</header>
+
+<!-- main hero – salt, bass, skin -->
+<section class="hero">
+  <div class="hero-backdrop"></div>
+  <div class="hero-content">
+    <div class="pre-head">07 · 03 · 26</div>
+    <h1>BEACH HOUSE</h1>
+    <div class="sub">no rules · after dark</div>
+    <div class="event-info">
+      <span><i class="fas fa-calendar-alt"></i> 7 MAR 2026</span>
+      <span><i class="fas fa-map-marker-alt"></i> MALIBU COLONY</span>
+    </div>
+    <a href="buy.html" class="btn">
+      <i class="fas fa-ticket-alt"></i> CLAIM ENTRY
+    </a>
+    <p style="margin-top: 24px; letter-spacing: 6px; font-size: 0.8rem; color: var(--sand);">⏤ WAVES + BASS ⏤</p>
+  </div>
+</section>
+
+<!-- detail cards: raw numbers, cold energy -->
+<div class="details-grid">
+  <div class="card">
+    <h3><i class="fas fa-ticket-alt"></i> FEE</h3>
+    <p>₦5,000</p>
+    <p class="note">early · low stock</p>
+  </div>
+  <div class="card">
+    <h3><i class="fas fa-bolt"></i> ACCESS</h3>
+    <p>QR</p>
+    <p class="note">skip rope · direct</p>
+  </div>
+  <div class="card">
+    <h3><i class="fas fa-shield-alt"></i> BOND</h3>
+    <p>PAYSTACK</p>
+    <p class="note">trench-level</p>
+  </div>
+  <div class="card">
+    <h3><i class="fas fa-music"></i> LINEUP</h3>
+    <p>4 ARTISTS</p>
+    <p class="note">sunset → sunrise</p>
+  </div>
+</div>
+
+<!-- wave divider -->
+<div class="ocean-line" style="margin: 30px auto; width: 80%;"></div>
+
+<!-- ========== BUY PAGE – SEXY, MINIMAL, CONFIDENT ========== -->
+<!-- embedded here to demonstrate the style (buy.html fragment) -->
+<div class="form-block" id="buy-page-preview">
+  <h2><i class="fas fa-sun"></i> ENROLL</h2>
+  <form id="ticketForm">
+    <input type="text" id="name" placeholder="FULL NAME" required>
+    <input type="email" id="email" placeholder="EMAIL" required>
+    <input type="tel" id="phone" placeholder="PHONE · optional">
+    <button type="submit" class="btn" style="width: 100%; border-radius: 0;">
+      <i class="fas fa-lock"></i> EXECUTE ₦5,000
+    </button>
+  </form>
+  <p style="margin-top: 32px; color: var(--sand); letter-spacing: 2px; font-size: 0.8rem;">
+    <i class="fas fa-info-circle"></i> eticket · 5min · spam folder
+  </p>
+  <p style="margin-top: 24px;">
+    <a href="index.html" style="color: var(--glimmer); text-decoration: none; border-bottom: 1px solid; padding-bottom: 4px;"><i class="fas fa-arrow-left"></i> REEF ENTRY</a>
+  </p>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div style="font-size: 1.2rem; margin-bottom: 20px;">
+    <i class="fab fa-instagram"></i>
+    <i class="fab fa-x-twitter"></i>
+    <i class="fab fa-soundcloud"></i>
+  </div>
+  <p>DEEP CONTACT · events@ftcbeach.com   /   +234 802 222 3344</p>
+  <p style="margin-top: 20px; opacity: 0.5;">© 2026 · FTC BEACH HOUSE · ALL RIGHTS RESERVED</p>
+</footer>
+
+<!-- ========== SUCCESS PAGE – MASCULINE, COOL ========== -->
+<div style="margin: 80px auto; max-width: 900px;" id="success-preview">
+  <div class="status-screen success">
+    <div class="status-icon">
+      🏄‍♂️
+    </div>
+    <h1>LOCKED IN</h1>
+    <div class="status-message">
+      PAYMENT CONFIRMED · TICKET SENT.<br>YOUR SPOT IS SECURED.
+    </div>
+    <hr style="width: 40%;">
+    <p style="font-size: 1rem; letter-spacing: 4px; margin-bottom: 40px;">CHECK INBOX (AND SPAM) — E-TICKET INSIDE</p>
+    <a href="index.html" class="btn" style="padding: 16px 64px;">
+      <i class="fas fa-home"></i> SHORE
+    </a>
+  </div>
+</div>
+
+<!-- ========== FAIL PAGE – RAW, KEEP COOL ========== -->
+<div style="margin: 80px auto; max-width: 900px;" id="fail-preview">
+  <div class="status-screen fail">
+    <div class="status-icon">
+      🌊
+    </div>
+    <h1>INTERRUPTED</h1>
+    <div class="status-message">
+      PAYMENT NOT COMPLETED. <br>WAVE BROKE — TRY AGAIN.
+    </div>
+    <p style="margin-bottom: 36px; color: #aa7a6c;"><i class="fas fa-exclamation-triangle"></i> SUPPORT 24/7 · +234 800 000 0000</p>
+    <a href="buy.html" class="btn" style="padding: 16px 64px; background: #1e1e1e;">
+      <i class="fas fa-redo"></i> RETRY
+    </a>
+    <p style="margin-top: 28px;">
+      <a href="index.html" style="color: var(--sand);"><i class="fas fa-arrow-left"></i> BACK TO EVENT</a>
+    </p>
+  </div>
+</div>
+
+<!-- JavaScript – cool, minimal, with edge -->
+<script>
+  (function() {
+    "use strict";
+
+    // TICKET FORM HANDLER – sexy, masculine simulation 
+    const ticketForm = document.getElementById("ticketForm");
+    if (ticketForm) {
+      ticketForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+
+        if (!name || !email) {
+          alert("⛔ FIELDS REQUIRED. DON'T BE SHY.");
+          return;
+        }
+
+        const btn = ticketForm.querySelector('.btn');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SECURING...';
+        btn.disabled = true;
+
+        // 80% success — like the tide
+        const success = Math.random() > 0.2;
+
+        setTimeout(() => {
+          if (success) {
+            window.location.href = "success.html";   // real redirect in production
+            // preview simulation: just show success block, but for full effect we keep redirect
+            console.log("SUCCESS — redirect to success.html");
+            // uncomment for demo inside this page:
+            // window.location.hash = "#success-preview";
+          } else {
+            window.location.href = "fail.html";
+            console.log("FAIL — redirect to fail.html");
+          }
+        }, 1800); // fast, tense
+      });
+    }
+
+    // SMOOTH SCROLL FOR ANCHOR (only if hash target exists)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const hash = this.getAttribute('href');
+        if (hash === "#") return;
+        const target = document.querySelector(hash);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // Add cinematic particles — but make them sharp, like spray
+    const hero = document.querySelector('.hero');
+    if (hero) {
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.style.position = 'absolute';
+        p.style.width = (Math.random() * 10 + 4) + 'px';
+        p.style.height = p.style.width;
+        p.style.background = `rgba(210, 180, 140, ${Math.random() * 0.35})`;
+        p.style.borderRadius = '0px';
+        p.style.transform = 'rotate(45deg)';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = Math.random() * 100 + '%';
+        p.style.pointerEvents = 'none';
+        p.style.opacity = 0.5;
+        p.style.boxShadow = '0 0 6px #B48C5C';
+        hero.style.overflow = 'hidden';
+        hero.appendChild(p);
+
+        let x = Math.random() * 100;
+        let y = Math.random() * 100;
+        let dx = (Math.random() - 0.5) * 1.6;
+        let dy = (Math.random() - 0.5) * 1.6;
+
+        function move() {
+          x += dx;
+          y += dy;
+          if (x > 100 || x < 0) dx *= -1;
+          if (y > 100 || y < 0) dy *= -1;
+          p.style.left = x + '%';
+          p.style.top = y + '%';
+          requestAnimationFrame(move);
+        }
+        move();
+      }
+    }
+
+    // LOG all transactions in raw console — masculine swagger
+    console.log("FTC BEACH HOUSE // ENGINE START");
+  })();
+</script>
+
+<!-- 
+  NOTE: This single file showcases the complete redesign – 
+  index, buy, success, fail – with masculine, cool, sexy beach house aesthetic. 
+  All pages now breathe raw texture, gold-hour light, and brutal edges.
+  The logo uses a fallback unsplash image for preview but keeps original src.
+  No emoji overuse – just salt, skin, and deep bass.
+-->
+
+</body>
+</html>

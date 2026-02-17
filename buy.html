@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FTC · BUY TICKET</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="buy-page">
+
+  <header class="logo-header">
+    <div class="logo-group">
+      <img src="pictures/march%20madness.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
+      <div class="logo-text-wrapper">
+        <span class="logo-ftc">FTC</span>
+        <span class="logo-presents">presents</span>
+        <span class="logo-event">MARCH MADNESS</span>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">
+      <i class="fas fa-arrow-left"></i> BACK
+    </a>
+  </header>
+
+  <div class="form-block">
+    <div class="batch-tag" id="priceTag">
+      <i class="fas fa-clock"></i> EARLY BIRD · LOADING...
+    </div>
+    
+    <h2>BUY TICKET</h2>
+    
+    <form id="ticketForm">
+      <input type="text" id="name" placeholder="FULL NAME" required>
+      <input type="email" id="email" placeholder="EMAIL ADDRESS" required>
+      <input type="tel" id="phone" placeholder="PHONE NUMBER (OPTIONAL)">
+      
+      <div class="form-notice" id="availabilityNotice">
+        <i class="fas fa-info-circle"></i> Checking availability...
+      </div>
+      
+      <button type="submit" class="btn submit-btn" id="submitBtn">
+        <i class="fas fa-lock"></i> PAY ₦8,000 NOW
+      </button>
+    </form>
+    
+    <p class="form-note">
+      <i class="fas fa-shield-alt"></i> Secured by Paystack · Cards, Bank Transfer, USSD
+    </p>
+  </div>
+
+  <footer>
+    <p>FTC · MARCH MADNESS · support@ftcmarch.com · +234 802 222 3344</p>
+  </footer>
+
+  <script>
+    // Fetch availability on page load
+    fetch('http://localhost:5000/api/tickets/availability')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const price = data.data.price;
+          const available = data.data.available;
+          
+          document.getElementById('priceTag').innerHTML = `<i class="fas fa-clock"></i> EARLY BIRD · ₦${price.toLocaleString()}`;
+          document.getElementById('availabilityNotice').innerHTML = `<i class="fas fa-info-circle"></i> ${available} tickets left · early bird price`;
+          document.getElementById('submitBtn').innerHTML = `<i class="fas fa-lock"></i> PAY ₦${price.toLocaleString()} NOW`;
+          
+          if (available <= 0) {
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerHTML = 'SOLD OUT';
+            document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-exclamation-circle"></i> Sorry, tickets are sold out';
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('priceTag').innerHTML = '<i class="fas fa-clock"></i> EARLY BIRD · ₦8,000';
+        document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> Early bird · limited tickets';
+      });
+
+    // Handle form submission
+    document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const originalText = submitBtn.innerHTML;
+      
+      // Validate email
+      if (!email.includes('@') || !email.includes('.')) {
+        alert('Please enter a valid email address');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        return;
+      }
+      
+      // Disable button and show loading
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING PAYMENT...';
+      submitBtn.disabled = true;
+      
+      try {
+        const response = await fetch('http://localhost:5000/api/tickets/purchase', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            phone: phone
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Save ticket data temporarily
+          sessionStorage.setItem('pendingTicket', JSON.stringify({
+            ticketId: data.data.ticketId,
+            name: name,
+            email: email
+          }));
+          
+          // Redirect to Paystack payment page
+          window.location.href = data.data.authorization_url;
+        } else {
+          alert('Error: ' + data.message);
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Network error. Please check your connection and try again.');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Check if returning from Paystack (payment status in URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    const reference = urlParams.get('reference');
+    const trxref = urlParams.get('trxref');
+    
+    if (reference || trxref) {
+      const paymentRef = reference || trxref;
+      
+      // Show processing message
+      document.getElementById('priceTag').innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING PAYMENT...';
+      document.getElementById('submitBtn').disabled = true;
+      
+      // Verify payment with backend
+      fetch('http://localhost:5000/api/tickets/verify-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reference: paymentRef })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          sessionStorage.setItem('ticketData', JSON.stringify(data.data));
+          window.location.href = 'success.html';
+        } else {
+          window.location.href = 'fail.html?reason=verification_failed';
+        }
+      })
+      .catch(() => {
+        window.location.href = 'fail.html?reason=network_error';
+      });
+    }
+  </script>
+</body>
+</html>

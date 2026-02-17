@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FTC · TICKET CONFIRMED</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="status-page">
+
+  <header class="logo-header">
+    <div class="logo-group">
+      <img src="pictures/march%20madness.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
+      <div class="logo-text-wrapper">
+        <span class="logo-ftc">FTC</span>
+        <span class="logo-presents">presents</span>
+        <span class="logo-event">MARCH MADNESS</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="status-screen success" id="ticketInfo">
+    <div class="status-icon">
+      👑
+    </div>
+    <h1>TICKET<br>CONFIRMED</h1>
+    <div class="status-message" id="ticketMessage">
+      LOADING TICKET DETAILS...
+    </div>
+    <hr>
+    <div class="ticket-details" id="ticketDetails">
+      <!-- Ticket details will be inserted here -->
+    </div>
+    <a href="index.html" class="btn status-btn">
+      <i class="fas fa-home"></i> RETURN HOME
+    </a>
+  </div>
+
+  <footer>
+    <p>FTC · MARCH MADNESS · MARCH 7TH 2026 · BEACH HOUSE</p>
+  </footer>
+
+  <script>
+    // Get ticket data from session storage
+    const ticketData = JSON.parse(sessionStorage.getItem('ticketData'));
+    
+    if (ticketData) {
+      document.getElementById('ticketMessage').innerHTML = 'YOUR TICKET IS CONFIRMED';
+      document.getElementById('ticketDetails').innerHTML = `
+        <div style="background: rgba(139,30,30,0.2); border: 2px solid #8B1E1E; padding: 20px; margin: 20px 0; text-align: left;">
+          <p><strong>TICKET ID:</strong> ${ticketData.ticketId}</p>
+          <p><strong>NAME:</strong> ${ticketData.name}</p>
+          <p><strong>EMAIL:</strong> ${ticketData.email}</p>
+          <p><strong>TICKET TYPE:</strong> EARLY BIRD</p>
+          <p><strong>PRICE:</strong> ${ticketData.price}</p>
+        </div>
+        <p style="color: #C69C6D; margin-bottom: 30px;">⭐ QR CODE WILL BE SENT TO YOUR EMAIL ⭐</p>
+      `;
+    } else {
+      document.getElementById('ticketMessage').innerHTML = 'TICKET CONFIRMED';
+      document.getElementById('ticketDetails').innerHTML = `
+        <p style="margin: 20px 0;">Check your email for ticket details and QR code</p>
+      `;
+    }
+  </script>
+</body>
+</html>

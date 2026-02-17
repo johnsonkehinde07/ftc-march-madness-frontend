@@ -30,7 +30,7 @@
     </div>
     
     <h2>BUY TICKET</h2>
-    <h3> This ticket permits one person to enter <b>'March Madness'</b> hosted by FTC. Doors open at 6pm and you are welcome to come at after that to experience the burti.<br><br><br></h3>
+    <h3> This ticket permits one person to enter <b>'March Madness'</b> hosted by FTC. Doors open at 6pm and you are welcome to come anytime after that to experience the vibe.<br><br><br></h3>
     <form id="ticketForm">
       <input type="text" id="name" placeholder="FULL NAME" required>
       <input type="email" id="email" placeholder="EMAIL ADDRESS" required>
@@ -52,10 +52,15 @@
 
   <footer>
     <p>FTC · MARCH MADNESS · support@ftcmarch.com · +234 8082420342</p>
+    <div class="social-links">
+      <a href="https://www.instagram.com/freedomtocreate_?igsh=MWV3emF0MTJydnU2dQ==" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-instagram"></i>
+      </a>
+    </div>
   </footer>
 
   <script>
-    // Fetch availability on page load - FIXED
+    // Fetch availability on page load
     fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/availability')
       .then(response => response.json())
       .then(data => {
@@ -63,7 +68,7 @@
           const price = data.data.price;
           const available = data.data.available;
           
-          document.getElementById('priceTag').innerHTML = `<i class="fas fa-clock"></i> WINNERS FC· ₦${price.toLocaleString()}`;
+          document.getElementById('priceTag').innerHTML = `<i class="fas fa-clock"></i> WINNERS FC · ₦${price.toLocaleString()}`;
           document.getElementById('availabilityNotice').innerHTML = `<i class="fas fa-info-circle"></i> ${available} tickets left · early bird price`;
           document.getElementById('submitBtn').innerHTML = `<i class="fas fa-lock"></i> PAY ₦${price.toLocaleString()} NOW`;
           
@@ -77,16 +82,16 @@
       .catch(error => {
         console.error('Error:', error);
         document.getElementById('priceTag').innerHTML = '<i class="fas fa-clock"></i> WINNERS FC · ₦8,000';
-        document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> Winners Fc · limited tickets';
+        document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> Winners FC · limited tickets';
       });
 
-    // Handle form submission - FIXED
+    // Handle form submission
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
       
       const submitBtn = document.getElementById('submitBtn');
       const originalText = submitBtn.innerHTML;
@@ -99,11 +104,21 @@
         return;
       }
       
+      // Validate name
+      if (name.length < 2) {
+        alert('Please enter your full name');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        return;
+      }
+      
       // Disable button and show loading
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING PAYMENT...';
       submitBtn.disabled = true;
       
       try {
+        console.log('Sending purchase request for:', email);
+        
         const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/purchase', {
           method: 'POST',
           headers: {
@@ -117,6 +132,7 @@
         });
         
         const data = await response.json();
+        console.log('Purchase response:', data);
         
         if (data.success) {
           // Save ticket data temporarily
@@ -141,36 +157,48 @@
       }
     });
 
-    // Check if returning from Paystack - FIXED
-    const urlParams = new URLSearchParams(window.location.search);
-    const reference = urlParams.get('reference');
-    const trxref = urlParams.get('trxref');
-    
-    if (reference || trxref) {
-      const paymentRef = reference || trxref;
+    // Check if returning from Paystack
+    (function checkPaymentReturn() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const reference = urlParams.get('reference') || urlParams.get('trxref');
+      
+      if (!reference) return; // No reference in URL
+      
+      console.log('Payment return detected. Reference:', reference);
       
       // Show processing message
       document.getElementById('priceTag').innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING PAYMENT...';
       document.getElementById('submitBtn').disabled = true;
       
+      // Clear the URL parameters without refreshing
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Verify payment with backend
       fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/verify-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reference: paymentRef })
+        body: JSON.stringify({ reference: reference })
       })
-      .then(res => res.json())
-      .then(data => {
+      .then(async response => {
+        const data = await response.json();
+        console.log('Verification response:', data);
+        
         if (data.success) {
+          // Store ticket data
           sessionStorage.setItem('ticketData', JSON.stringify(data.data));
+          // Redirect to success page
           window.location.href = 'success.html';
         } else {
+          console.error('Verification failed:', data.message);
           window.location.href = 'fail.html?reason=verification_failed';
         }
       })
-      .catch(() => {
+      .catch(error => {
+        console.error('Verification error:', error);
         window.location.href = 'fail.html?reason=network_error';
       });
-    }
+    })();
   </script>
+  
 </body>
 </html>

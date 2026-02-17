@@ -49,9 +49,8 @@ body {
 .logo-img {
   height: 80px;
   width: auto;
-  border-radius: 4px;
-  box-shadow: 0 0 25px rgba(139,30,30,0.5);
-  border: 2px solid var(--secondary-gold);
+  box-shadow: 0 0 25px rgba(196, 181, 181, 0.5);
+  
 }
 
 .logo-text-wrapper {

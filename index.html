@@ -82,7 +82,7 @@
 
   <script>
     // Fetch availability from backend
-    fetch('http://localhost:5000/api/tickets/availability')
+  fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/availability')
       .then(response => response.json())
       .then(data => {
         if (data.success) {

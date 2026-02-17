@@ -30,7 +30,8 @@
     </div>
     
     <h2>BUY TICKET</h2>
-    <h3> This ticket permits one person to enter <b>'March Madness'</b> hosted by FTC. Doors open at 6pm and you are welcome to come anytime after that to experience the vibe.<br><br><br></h3>
+    <h3> This ticket permits one person to enter <b>'March Madness'</b> hosted by FTC. Doors open at 6pm and you are welcome to come anytime after that to experience the vibe.</h3>
+    
     <form id="ticketForm">
       <input type="text" id="name" placeholder="FULL NAME" required>
       <input type="email" id="email" placeholder="EMAIL ADDRESS" required>
@@ -60,7 +61,7 @@
   </footer>
 
   <script>
-    // Fetch availability on page load
+    // ========== FETCH AVAILABILITY ON PAGE LOAD ==========
     fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/availability')
       .then(response => response.json())
       .then(data => {
@@ -85,7 +86,7 @@
         document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> Winners FC · limited tickets';
       });
 
-    // Handle form submission
+    // ========== HANDLE FORM SUBMISSION ==========
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -117,7 +118,7 @@
       submitBtn.disabled = true;
       
       try {
-        console.log('Sending purchase request for:', email);
+        console.log('📤 Sending purchase request for:', email);
         
         const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/purchase', {
           method: 'POST',
@@ -132,7 +133,7 @@
         });
         
         const data = await response.json();
-        console.log('Purchase response:', data);
+        console.log('📥 Purchase response:', data);
         
         if (data.success) {
           // Save ticket data temporarily
@@ -150,21 +151,21 @@
           submitBtn.disabled = false;
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error:', error);
         alert('Network error. Please check your connection and try again.');
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
       }
     });
 
-    // Check if returning from Paystack
+    // ========== CHECK IF RETURNING FROM PAYSTACK ==========
     (function checkPaymentReturn() {
       const urlParams = new URLSearchParams(window.location.search);
       const reference = urlParams.get('reference') || urlParams.get('trxref');
       
       if (!reference) return; // No reference in URL
       
-      console.log('Payment return detected. Reference:', reference);
+      console.log('🔄 Payment return detected. Reference:', reference);
       
       // Show processing message
       document.getElementById('priceTag').innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING PAYMENT...';
@@ -181,20 +182,20 @@
       })
       .then(async response => {
         const data = await response.json();
-        console.log('Verification response:', data);
+        console.log('📥 Verification response:', data);
         
         if (data.success) {
           // Store ticket data
           sessionStorage.setItem('ticketData', JSON.stringify(data.data));
-          // Redirect to success page
+          console.log('✅ Redirecting to success page...');
           window.location.href = 'success.html';
         } else {
-          console.error('Verification failed:', data.message);
+          console.error('❌ Verification failed:', data.message);
           window.location.href = 'fail.html?reason=verification_failed';
         }
       })
       .catch(error => {
-        console.error('Verification error:', error);
+        console.error('❌ Verification error:', error);
         window.location.href = 'fail.html?reason=network_error';
       });
     })();

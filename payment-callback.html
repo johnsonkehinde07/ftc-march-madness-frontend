@@ -3,33 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Processing - FTC</title>
+  <title>Processing Payment - FTC</title>
   <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-  <div class="status-screen">
-    <div class="status-icon">⚡</div>
-    <h1>VERIFYING<br>PAYMENT</h1>
-    <p style="color: #C69C6D; margin: 20px 0;">Please wait...</p>
-    <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid #C69C6D; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 20px auto;"></div>
-  </div>
-
   <style>
+    body {
+      background: #1A1212;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .processing-container {
+      text-align: center;
+      padding: 60px 40px;
+      max-width: 500px;
+      width: 100%;
+      background: rgba(26, 18, 18, 0.98);
+      border: 3px solid #8B1E1E;
+      box-shadow: 20px 20px 0 rgba(0,0,0,0.5);
+    }
+    h1 {
+      color: #C69C6D;
+      font-size: 2.5rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 30px;
+      line-height: 1.2;
+    }
+    .spinner {
+      border: 4px solid rgba(198, 156, 109, 0.2);
+      border-top: 4px solid #C69C6D;
+      border-right: 4px solid #8B1E1E;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      animation: spin 1s linear infinite;
+      margin: 30px auto;
+    }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    .status-text {
+      color: #F5E6D3;
+      font-size: 1.2rem;
+      margin: 20px 0;
+      line-height: 1.6;
+    }
+    .warning-text {
+      color: #8B1E1E;
+      margin-top: 30px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-top: 1px solid rgba(139,30,30,0.3);
+      padding-top: 20px;
+    }
+    .reference-id {
+      color: #C69C6D;
+      font-size: 0.9rem;
+      background: rgba(139,30,30,0.2);
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 15px;
+      word-break: break-all;
+    }
   </style>
+</head>
+<body>
+  <div class="processing-container">
+    <h1>VERIFYING<br>PAYMENT</h1>
+    <div class="spinner"></div>
+    <p class="status-text">Please wait while we confirm your payment with Paystack...</p>
+    <p class="status-text">This may take a few moments</p>
+    <div id="referenceDisplay" class="reference-id"></div>
+    <p class="warning-text">DO NOT CLOSE THIS WINDOW</p>
+  </div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const reference = urlParams.get('reference') || urlParams.get('trxref');
-    
-    if (reference) {
-      window.location.href = `https://ftc-march-madness.netlify.app/buy.html?reference=${reference}`;
-    } else {
-      window.location.href = 'https://ftc-march-madness.netlify.app/fail.html';
-    }
+    (function() {
+      // Get reference from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const reference = urlParams.get('reference') || urlParams.get('trxref');
+      
+      console.log('💰 Payment callback received');
+      console.log('📝 Reference:', reference);
+      console.log('🔗 Full URL:', window.location.href);
+      
+      // Display reference on page
+      const refDisplay = document.getElementById('referenceDisplay');
+      if (reference) {
+        refDisplay.innerHTML = `Reference: ${reference}`;
+      }
+      
+      if (!reference) {
+        console.error('❌ No payment reference found in URL');
+        // Show error message
+        document.querySelector('.status-text').innerHTML = 'No payment reference found.';
+        // Redirect after delay
+        setTimeout(() => {
+          window.location.href = 'https://ftc-march-madness.netlify.app/fail.html?reason=no_reference';
+        }, 3000);
+        return;
+      }
+      
+      // Store reference in sessionStorage
+      try {
+        sessionStorage.setItem('paymentReference', reference);
+        console.log('✅ Reference stored in sessionStorage');
+      } catch (e) {
+        console.warn('⚠️ Could not store in sessionStorage:', e);
+      }
+      
+      // Update status text
+      document.querySelector('.status-text').innerHTML = `Verifying payment reference: ${reference.substring(0, 10)}...`;
+      
+      // Redirect to buy.html for verification
+      console.log('🔄 Redirecting to buy.html for verification...');
+      
+      // Small delay to ensure everything is logged
+      setTimeout(() => {
+        window.location.href = `https://ftc-march-madness.netlify.app/buy.html?reference=${reference}`;
+      }, 1500);
+    })();
   </script>
 </body>
 </html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTC · Scanner</title>
+    <!-- Your existing style sheet -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- QrCode Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        /* Simple scanner page styles */
+        .scanner-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(26, 18, 18, 0.95);
+            border: 3px solid var(--primary-red);
+            text-align: center;
+        }
+        #reader {
+            width: 100%;
+            border: 2px solid var(--secondary-gold);
+            background: black;
+            margin-bottom: 20px;
+        }
+        #result {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 0;
+        }
+        .valid {
+            background: #004d00;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+        }
+        .invalid {
+            background: #4d0000;
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+        }
+        .back-link {
+            display: block;
+            margin-top: 30px;
+            color: var(--secondary-gold);
+        }
+        .manual-input {
+            margin-top: 20px;
+            padding: 15px;
+            border-top: 1px solid var(--primary-red);
+        }
+        #manualTicketId {
+            padding: 10px;
+            width: 70%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--primary-red);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="logo-header">
+        <div class="logo-group">
+            <img src="pictures/logo.jpeg" alt="FTC" class="logo-img">
+            <span class="logo-text">SCANNER</span>
+        </div>
+        <a href="index.html" class="back-link">← EXIT</a>
+    </header>
+
+    <div class="scanner-container">
+        <h2 style="color: var(--secondary-gold);">VALIDATE ENTRY</h2>
+        <p>Scan the QR code from the ticket email.</p>
+
+        <!-- Scanner will start here -->
+        <div id="reader"></div>
+
+        <!-- Validation result shows here -->
+        <div id="result">Waiting for scan...</div>
+
+        <!-- Manual fallback in case camera doesn't work -->
+        <div class="manual-input">
+            <p style="color: var(--secondary-gold);">Manual Entry</p>
+            <input type="text" id="manualTicketId" placeholder="Enter Ticket ID">
+            <button class="btn" style="padding: 10px 20px; margin-top: 10px;" onclick="validateManual()">Check</button>
+        </div>
+    </div>
+
+    <footer style="margin-top: 20px;">
+        <p>FTC · MARCH MADNESS · VALIDATION TERMINAL</p>
+    </footer>
+
+    <script>
+        // This function sends the ticket data to your backend
+        function validateTicket(ticketData) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Validating...';
+            resultDiv.className = '';
+
+            // The scanner gives us a string. It should be JSON, but might be just the ID.
+            let payload = { qrData: ticketData };
+            
+
+            fetch('https://ftc-march-madness-backend-1.onrender.com/api/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    resultDiv.innerHTML = `✅ VALID<br>Welcome, ${data.data.name}!`;
+                    resultDiv.className = 'valid';
+                } else {
+                    resultDiv.innerHTML = `❌ INVALID<br>${data.message}`;
+                    resultDiv.className = 'invalid';
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                resultDiv.innerHTML = '❌ ERROR<br>Could not connect to server.';
+                resultDiv.className = 'invalid';
+            });
+        }
+
+        // For manual entry fallback
+        function validateManual() {
+            const ticketId = document.getElementById('manualTicketId').value;
+            if (!ticketId) {
+                alert('Enter a Ticket ID');
+                return;
+            }
+            // Simulate a QR code object for the manual entry
+            validateTicket(JSON.stringify({ ticketId: ticketId }));
+        }
+
+        // --- Scanner Configuration ---
+        const html5QrCode = new Html5Qrcode("reader");
+
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            // Stop scanning once we get a result
+            html5QrCode.stop().then(() => {
+                console.log("QR Scanner stopped.");
+                validateTicket(decodedText);
+            }).catch(err => {
+                console.log("Error stopping scanner.", err);
+                validateTicket(decodedText);
+            });
+        };
+
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        // Start scanning when page loads
+        html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+        .catch(err => {
+            console.log("Unable to start scanner:", err);
+            document.getElementById('result').innerHTML = 'Camera error. Use manual entry.';
+        });
+
+    </script>
+</body>
+</html>

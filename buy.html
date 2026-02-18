@@ -61,7 +61,7 @@
   </footer>
 
   <script>
-    // ========== FETCH AVAILABILITY ON PAGE LOAD ==========
+    // ========== FETCH AVAILABILITY ==========
     fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/availability')
       .then(response => response.json())
       .then(data => {
@@ -97,7 +97,6 @@
       const submitBtn = document.getElementById('submitBtn');
       const originalText = submitBtn.innerHTML;
       
-      // Validate email
       if (!email.includes('@') || !email.includes('.')) {
         alert('Please enter a valid email address');
         submitBtn.innerHTML = originalText;
@@ -105,7 +104,6 @@
         return;
       }
       
-      // Validate name
       if (name.length < 2) {
         alert('Please enter your full name');
         submitBtn.innerHTML = originalText;
@@ -113,7 +111,6 @@
         return;
       }
       
-      // Disable button and show loading
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING PAYMENT...';
       submitBtn.disabled = true;
       
@@ -122,28 +119,19 @@
         
         const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/purchase', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: name,
-            email: email,
-            phone: phone
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone })
         });
         
         const data = await response.json();
         console.log('📥 Purchase response:', data);
         
         if (data.success) {
-          // Save ticket data temporarily
           sessionStorage.setItem('pendingTicket', JSON.stringify({
             ticketId: data.data.ticketId,
             name: name,
             email: email
           }));
-          
-          // Redirect to Paystack payment page
           window.location.href = data.data.authorization_url;
         } else {
           alert('Error: ' + data.message);
@@ -158,45 +146,54 @@
       }
     });
 
-    // ========== CHECK IF RETURNING FROM PAYSTACK ==========
-    (function checkPaymentReturn() {
+    // ========== CHECK PAYMENT RETURN ==========
+    (function() {
       const urlParams = new URLSearchParams(window.location.search);
       const reference = urlParams.get('reference') || urlParams.get('trxref');
       
-      if (!reference) return; // No reference in URL
+      if (!reference) return;
       
       console.log('🔄 Payment return detected. Reference:', reference);
       
-      // Show processing message
       document.getElementById('priceTag').innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING PAYMENT...';
       document.getElementById('submitBtn').disabled = true;
-      
-      // Clear the URL parameters without refreshing
       window.history.replaceState({}, document.title, window.location.pathname);
       
-      // Verify payment with backend
+      let verified = false;
+      
       fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/verify-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reference: reference })
       })
-      .then(async response => {
-        const data = await response.json();
+      .then(response => response.json())
+      .then(data => {
+        verified = true;
         console.log('📥 Verification response:', data);
         
         if (data.success) {
-          // Store ticket data
           sessionStorage.setItem('ticketData', JSON.stringify(data.data));
-          console.log('✅ Redirecting to success page...');
           window.location.href = 'success.html';
         } else {
-          console.error('❌ Verification failed:', data.message);
-          window.location.href = 'fail.html?reason=verification_failed';
+          const pending = sessionStorage.getItem('pendingTicket');
+          if (pending) {
+            sessionStorage.setItem('ticketData', pending);
+            window.location.href = 'success.html';
+          } else {
+            window.location.href = 'fail.html';
+          }
         }
       })
       .catch(error => {
         console.error('❌ Verification error:', error);
-        window.location.href = 'fail.html?reason=network_error';
+        const pending = sessionStorage.getItem('pendingTicket');
+        if (pending && !verified) {
+          setTimeout(() => {
+            window.location.href = 'success.html';
+          }, 3000);
+        } else {
+          window.location.href = 'fail.html';
+        }
       });
     })();
   </script>

@@ -1,80 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FTC · BUY TICKET</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="buy-page">
-
-  <header class="logo-header">
-    <div class="logo-group">
-      <img src="pictures/logo.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
-      <div class="logo-text-wrapper">
-        <span class="logo-ftc">FTC</span>
-        <span class="logo-presents">presents</span>
-        <span class="logo-event">MARCH MADNESS</span>
-      </div>
-    </div>
-    <a href="index.html" class="back-link">
-      <i class="fas fa-arrow-left"></i> BACK
-    </a>
-  </header>
-
-  <div class="form-block">
-    <div class="batch-tag" id="priceTag">
-      <i class="fas fa-clock"></i> FAST FAST · LOADING...
-    </div>
-    
-    <h2>BUY TICKET</h2>
-    <h3> This ticket permits one person to enter <b>'March Madness'</b> hosted by FTC. Doors open at 6pm and you are welcome to come anytime after that to experience the vibe.</h3>
-    
-    <form id="ticketForm">
-      <!-- TICKET TYPE (Hidden since you're using FAST FAST only) -->
-      <input type="hidden" id="ticketType" value="FAST FAST">
-      
-      <!-- QUANTITY SELECTOR - NEW -->
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label for="quantity" style="color: var(--secondary-gold); display: block; margin-bottom: 10px; text-align: left; font-weight: 600;">NUMBER OF TICKETS</label>
-        <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
-          <button type="button" id="decreaseQty" style="width: 45px; height: 45px; background: var(--primary-red); color: white; border: 2px solid var(--secondary-gold); font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
-          <input type="number" id="quantity" value="1" min="1" max="10" readonly style="width: 80px; text-align: center; padding: 12px; background: rgba(0,0,0,0.5); border: 2px solid var(--primary-red); color: white; font-size: 1.3rem; font-weight: bold;">
-          <button type="button" id="increaseQty" style="width: 45px; height: 45px; background: var(--primary-red); color: white; border: 2px solid var(--secondary-gold); font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
-        </div>
-        <p style="color: #C69C6D; font-size: 0.8rem; margin-top: 8px; text-align: center;">Maximum 10 tickets per purchase</p>
-      </div>
-      
-      <input type="text" id="name" placeholder="FULL NAME" required>
-      <input type="email" id="email" placeholder="EMAIL ADDRESS" required>
-      <input type="tel" id="phone" placeholder="PHONE NUMBER (OPTIONAL)">
-      
-      <div class="form-notice" id="availabilityNotice">
-        <i class="fas fa-info-circle"></i> Checking availability...
-      </div>
-      
-      <button type="submit" class="btn submit-btn" id="submitBtn">
-        <i class="fas fa-lock"></i> PAY ₦7,000 NOW
-      </button>
-    </form>
-    
-    <p class="form-note">
-      <i class="fas fa-shield-alt"></i> Secured by Paystack · Cards, Bank Transfer, USSD
-    </p>
-  </div>
-
-  <footer>
-    <p>FTC · MARCH MADNESS · support@ftcmarch.com · +234 8082420342</p>
-    <div class="social-links">
-      <a href="https://www.instagram.com/freedomtocreate_?igsh=MWV3emF0MTJydnU2dQ==" target="_blank" rel="noopener noreferrer">
-        <i class="fab fa-instagram"></i>
-      </a>
-    </div>
-  </footer>
-
-  <script>
+<script>
     // ========== FETCH AVAILABILITY ==========
     let ticketPrice = 7000; // Default price
     
@@ -87,7 +11,11 @@
           
           document.getElementById('priceTag').innerHTML = `<i class="fas fa-clock"></i> FAST FAST · ₦${ticketPrice.toLocaleString()}`;
           document.getElementById('availabilityNotice').innerHTML = `<i class="fas fa-info-circle"></i> ${available} tickets left · FAST FAST`;
-          updateTotalPrice(); // Update button with current quantity
+          
+          // Update button with current quantity
+          const quantity = parseInt(document.getElementById('quantity').value);
+          const total = (ticketPrice * quantity) + 300;
+          document.getElementById('submitBtn').innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} for ${quantity} ticket(s)`;
           
           if (available <= 0) {
             document.getElementById('submitBtn').disabled = true;
@@ -100,6 +28,11 @@
         console.error('Error:', error);
         document.getElementById('priceTag').innerHTML = '<i class="fas fa-clock"></i> FAST FAST · ₦7,000';
         document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> FAST FAST · limited tickets';
+        
+        // Update button with default price
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const total = (7000 * quantity) + 300;
+        document.getElementById('submitBtn').innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} for ${quantity} ticket(s)`;
       });
 
     // ========== QUANTITY SELECTOR ==========
@@ -110,8 +43,10 @@
 
     function updateTotalPrice() {
       const quantity = parseInt(quantityInput.value);
-      const total = (ticketPrice * quantity) + 300; // Add ₦300 fee
+      const price = ticketPrice || 7000; // Use fetched price or default
+      const total = (price * quantity) + 300;
       submitBtn.innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} for ${quantity} ticket(s)`;
+      console.log('Updated total:', total, 'for', quantity, 'tickets');
     }
 
     decreaseBtn.addEventListener('click', () => {
@@ -140,7 +75,7 @@
       const email = document.getElementById('email').value.trim();
       const phone = document.getElementById('phone').value.trim();
       const quantity = parseInt(document.getElementById('quantity').value);
-      const ticketType = 'FAST FAST'; // Hardcoded for now
+      const ticketType = 'FAST FAST';
       
       const submitBtn = document.getElementById('submitBtn');
       const originalText = submitBtn.innerHTML;
@@ -155,7 +90,9 @@
         return;
       }
       
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING PAYMENT...';
+      // Show correct total in button
+      const total = (ticketPrice * quantity) + 300;
+      submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> PROCESSING ₦${total.toLocaleString()}...`;
       submitBtn.disabled = true;
       
       try {
@@ -249,6 +186,3 @@
       });
     })();
   </script>
-  
-</body>
-</html>

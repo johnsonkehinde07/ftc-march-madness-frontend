@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FTC · MARCH MADNESS</title>
   
-  <!-- Open Graph / Social Media Meta Tags -->
+  <!-- Open Graph / Social Media Meta Tags - Updated to Render URL -->
   <meta property="og:title" content="FTC presents MARCH MADNESS" />
-  <meta property="og:description" content="Beach house party. Fast Fast tickets ₦7,000. Get your ticket now!" />
-  <meta property="og:image" content="https://ftc-march-madness.netlify.app/pictures/logo.jpeg" /> 
-  <meta property="og:url" content="https://ftc-march-madness.netlify.app" />
+  <meta property="og:description" content="Beach house party. WINNERS FC tickets ₦8,000. Get your ticket now!" />
+  <meta property="og:image" content="https://ftc-march-madness.onrender.com/pictures/logo.jpeg" /> 
+  <meta property="og:url" content="https://ftc-march-madness.onrender.com" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="FTC MARCH MADNESS" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="FTC presents MARCH MADNESS" />
-  <meta name="twitter:description" content="Beach house party. Fast Fast tickets ₦7,000. Get your ticket now!" />
-  <meta name="twitter:image" content="https://ftc-march-madness.netlify.app/pictures/logo.jpeg" />
+  <meta name="twitter:description" content="Beach house party. WINNERS FC tickets ₦8,000. Get your ticket now!" />
+  <meta name="twitter:image" content="https://ftc-march-madness.onrender.com/pictures/logo.jpeg" />
 
   <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="nav-accent">
-      <span><i class="fas fa-fire"></i> FAST FAST</span>
+      <span><i class="fas fa-fire"></i> WINNERS FC</span>
       <span><i class="fas fa-clock"></i> LIMITED</span>
     </div>
   </header>
@@ -56,14 +56,14 @@
       <a href="buy.html" class="btn">
         <i class="fas fa-bolt"></i> BUY TICKET
       </a>
-      <p class="wave-tag" id="availabilityDisplay">⏤ FAST FAST · ₦7,000 ⏤</p>
+      <p class="wave-tag" id="availabilityDisplay">⏤ WINNERS FC · ₦8,000 ⏤</p>
     </div>
   </section>
 
   <div class="details-grid">
     <div class="card">
-      <h3><i class="fas fa-ticket-alt"></i> FAST FAST</h3>
-      <p>₦7,000</p>
+      <h3><i class="fas fa-ticket-alt"></i> WINNERS FC</h3>
+      <p>₦8,000</p>
       <p class="note">limited tickets</p>
     </div>
     <div class="card">
@@ -97,8 +97,8 @@
 </footer>
 
   <script>
-    // Simple check if tickets are sold out (without showing count)
-    fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/availability')
+    // Simple check if tickets are sold out
+    fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/availability/WINNERS FC')
       .then(response => response.json())
       .then(data => {
         if (data.success && data.data.available <= 0) {

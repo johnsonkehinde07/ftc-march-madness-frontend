@@ -39,7 +39,7 @@
   </div>
 
   <footer>
-    <p>FTC · MARCH MADNESS · MARCH 7TH 2026 · BEACH HOUSE</p>
+    <p>FTC · MARCH MADNESS · MARCH 7TH 2026 · KODO BEACH HOUSE</p>
   </footer>
 
   <script>
@@ -48,20 +48,41 @@
     
     if (ticketData) {
       document.getElementById('ticketMessage').innerHTML = 'YOUR TICKET IS CONFIRMED';
-      document.getElementById('ticketDetails').innerHTML = `
-        <div style="background: rgba(139,30,30,0.2); border: 2px solid #8B1E1E; padding: 20px; margin: 20px 0; text-align: left;">
-          <p><strong>TICKET ID:</strong> ${ticketData.ticketId}</p>
-          <p><strong>NAME:</strong> ${ticketData.name}</p>
-          <p><strong>EMAIL:</strong> ${ticketData.email}</p>
-          <p><strong>TICKET TYPE:</strong> FAST FAST</p>
-          <p><strong>PRICE:</strong> ${ticketData.price}</p>
-        </div>
-        <p style="color: #C69C6D; margin-bottom: 30px;">⭐ QR CODE WILL BE SENT TO YOUR EMAIL ⭐</p>
+      
+      let ticketHtml = '<div style="background: rgba(139,30,30,0.2); border: 2px solid #8B1E1E; padding: 20px; margin: 20px 0; text-align: left;">';
+      
+      if (ticketData.count > 1) {
+        // Multiple tickets
+        ticketHtml += `<p><strong>TOTAL TICKETS:</strong> ${ticketData.count}</p>`;
+        ticketData.tickets.forEach(t => {
+          ticketHtml += `<p><strong>TICKET ID:</strong> ${t.ticketId}</p>`;
+          ticketHtml += `<p><strong>NAME:</strong> ${t.name}</p>`;
+          ticketHtml += `<p><strong>TYPE:</strong> ${t.ticketType}</p>`;
+          ticketHtml += `<hr style="border-color: #8B1E1E; opacity: 0.3;">`;
+        });
+      } else {
+        // Single ticket
+        const t = ticketData.tickets ? ticketData.tickets[0] : ticketData;
+        ticketHtml += `
+          <p><strong>TICKET ID:</strong> ${t.ticketId}</p>
+          <p><strong>NAME:</strong> ${t.name}</p>
+          <p><strong>EMAIL:</strong> ${t.email}</p>
+          <p><strong>TICKET TYPE:</strong> ${t.ticketType || 'WINNERS FC'}</p>
+          <p><strong>PRICE:</strong> ₦${t.price || 8000}</p>
+        `;
+      }
+      
+      ticketHtml += `</div>
+        <p style="color: #C69C6D; margin-bottom: 30px;">⭐ QR CODE HAS BEEN SENT TO YOUR EMAIL ⭐</p>
+        <p style="color: #F5E6D3; font-size: 0.9rem;">Check your inbox (and spam folder) for your QR code ticket.</p>
       `;
+      
+      document.getElementById('ticketDetails').innerHTML = ticketHtml;
     } else {
       document.getElementById('ticketMessage').innerHTML = 'TICKET CONFIRMED';
       document.getElementById('ticketDetails').innerHTML = `
         <p style="margin: 20px 0;">Check your email for ticket details and QR code</p>
+        <p style="color: #F5E6D3; font-size: 0.9rem;">If you don't see it within 5 minutes, check your spam folder.</p>
       `;
     }
   </script>

@@ -1,71 +1,145 @@
-<script>
-    // ========== FETCH AVAILABILITY ==========
-    let ticketPrice = 7000; // Default price
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FTC · BUY TICKET</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="buy-page">
+
+  <header class="logo-header">
+    <div class="logo-group">
+      <img src="pictures/logo.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
+      <div class="logo-text-wrapper">
+        <span class="logo-ftc">FTC</span>
+        <span class="logo-presents">presents</span>
+        <span class="logo-event">MARCH MADNESS</span>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">
+      <i class="fas fa-arrow-left"></i> BACK
+    </a>
+  </header>
+
+  <div class="form-block">
+    <div class="batch-tag" id="priceTag">
+      <i class="fas fa-clock"></i> SELECT TICKET TYPE
+    </div>
     
-    fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/availability')
+    <h2>BUY TICKET</h2>
+    <h3> This ticket permits one person to enter <b>'March Madness'</b> hosted by FTC. Doors open at 6pm and you are welcome to come anytime after that to experience the vibe.</h3>
+    
+    <form id="ticketForm">
+      <!-- TICKET TYPE DROPDOWN -->
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label for="ticketType" style="color: var(--secondary-gold); display: block; margin-bottom: 10px; text-align: left; font-weight: 600;">SELECT TICKET TYPE</label>
+        <select id="ticketType" required style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 2px solid var(--primary-red); color: white; border-radius: 0; font-size: 1rem;">
+          <option value="">-- Choose ticket type --</option>
+        </select>
+      </div>
+      
+      <input type="text" id="name" placeholder="FULL NAME" required>
+      <input type="email" id="email" placeholder="EMAIL ADDRESS" required>
+      <input type="tel" id="phone" placeholder="PHONE NUMBER (OPTIONAL)">
+      
+      <div class="form-notice" id="availabilityNotice">
+        <i class="fas fa-info-circle"></i> Select a ticket type
+      </div>
+      
+      <button type="submit" class="btn submit-btn" id="submitBtn" disabled>
+        <i class="fas fa-lock"></i> SELECT TICKET TYPE
+      </button>
+    </form>
+    
+    <p class="form-note">
+      <i class="fas fa-shield-alt"></i> Secured by Paystack · Cards, Bank Transfer, USSD
+    </p>
+  </div>
+
+  <footer>
+    <p>FTC · MARCH MADNESS · support@ftcmarch.com · +234 8082420342</p>
+    <div class="social-links">
+      <a href="https://www.instagram.com/freedomtocreate_?igsh=MWV3emF0MTJydnU2dQ==" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-instagram"></i>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // ========== FETCH AVAILABLE TICKET TYPES ==========
+    let ticketPrice = 8000;
+    let selectedType = '';
+    const quantity = 1;
+    
+    // Fetch available ticket types
+    fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/types')
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          ticketPrice = data.data.price;
-          const available = data.data.available;
+          const select = document.getElementById('ticketType');
+          const submitBtn = document.getElementById('submitBtn');
+          const priceTag = document.getElementById('priceTag');
+          const availabilityNotice = document.getElementById('availabilityNotice');
           
-          document.getElementById('priceTag').innerHTML = `<i class="fas fa-clock"></i> FAST FAST · ₦${ticketPrice.toLocaleString()}`;
-          document.getElementById('availabilityNotice').innerHTML = `<i class="fas fa-info-circle"></i> ${available} tickets left · FAST FAST`;
+          select.innerHTML = '<option value="">-- Choose ticket type --</option>';
           
-          // Update button with current quantity
-          const quantity = parseInt(document.getElementById('quantity').value);
-          const total = (ticketPrice * quantity) + 300;
-          document.getElementById('submitBtn').innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} for ${quantity} ticket(s)`;
+          let hasAvailable = false;
           
-          if (available <= 0) {
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').innerHTML = 'SOLD OUT';
-            document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-exclamation-circle"></i> Sorry, tickets are sold out';
+          data.data.forEach(type => {
+            if (type.available > 0) {
+              hasAvailable = true;
+              const option = document.createElement('option');
+              option.value = type.name;
+              option.textContent = `${type.name} - ₦${type.price.toLocaleString()} (${type.available} left)`;
+              option.dataset.price = type.price;
+              option.dataset.available = type.available;
+              select.appendChild(option);
+            }
+          });
+          
+          if (!hasAvailable) {
+            priceTag.innerHTML = '<i class="fas fa-clock"></i> SOLD OUT';
+            availabilityNotice.innerHTML = '<i class="fas fa-exclamation-circle"></i> All ticket types are sold out';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'SOLD OUT';
           }
+          
+          select.addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            
+            if (selected.value) {
+              ticketPrice = parseInt(selected.dataset.price);
+              selectedType = selected.value;
+              const available = parseInt(selected.dataset.available);
+              
+              const total = (ticketPrice * quantity) + 300;
+              
+              priceTag.innerHTML = `<i class="fas fa-clock"></i> ${selected.value} · ₦${ticketPrice.toLocaleString()}`;
+              availabilityNotice.innerHTML = `<i class="fas fa-info-circle"></i> ${available} tickets left · ${selected.value}`;
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} NOW`;
+            } else {
+              priceTag.innerHTML = '<i class="fas fa-clock"></i> SELECT TICKET TYPE';
+              availabilityNotice.innerHTML = '<i class="fas fa-info-circle"></i> Select a ticket type';
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = 'SELECT TICKET TYPE';
+            }
+          });
         }
       })
       .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('priceTag').innerHTML = '<i class="fas fa-clock"></i> FAST FAST · ₦7,000';
-        document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> FAST FAST · limited tickets';
+        console.error('Error fetching ticket types:', error);
+        document.getElementById('priceTag').innerHTML = '<i class="fas fa-clock"></i> WINNERS FC · ₦8,000';
+        document.getElementById('availabilityNotice').innerHTML = '<i class="fas fa-info-circle"></i> WINNERS FC · limited tickets';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-lock"></i> PAY ₦8,300 NOW';
         
-        // Update button with default price
-        const quantity = parseInt(document.getElementById('quantity').value);
-        const total = (7000 * quantity) + 300;
-        document.getElementById('submitBtn').innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} for ${quantity} ticket(s)`;
+        selectedType = 'WINNERS FC';
+        ticketPrice = 8000;
       });
-
-    // ========== QUANTITY SELECTOR ==========
-    const quantityInput = document.getElementById('quantity');
-    const decreaseBtn = document.getElementById('decreaseQty');
-    const increaseBtn = document.getElementById('increaseQty');
-    const submitBtn = document.getElementById('submitBtn');
-
-    function updateTotalPrice() {
-      const quantity = parseInt(quantityInput.value);
-      const price = ticketPrice || 7000; // Use fetched price or default
-      const total = (price * quantity) + 300;
-      submitBtn.innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} for ${quantity} ticket(s)`;
-      console.log('Updated total:', total, 'for', quantity, 'tickets');
-    }
-
-    decreaseBtn.addEventListener('click', () => {
-      let val = parseInt(quantityInput.value);
-      if (val > 1) {
-        val -= 1;
-        quantityInput.value = val;
-        updateTotalPrice();
-      }
-    });
-
-    increaseBtn.addEventListener('click', () => {
-      let val = parseInt(quantityInput.value);
-      if (val < 10) {
-        val += 1;
-        quantityInput.value = val;
-        updateTotalPrice();
-      }
-    });
 
     // ========== HANDLE FORM SUBMISSION ==========
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
@@ -74,8 +148,14 @@
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const phone = document.getElementById('phone').value.trim();
-      const quantity = parseInt(document.getElementById('quantity').value);
-      const ticketType = 'FAST FAST';
+      
+      const ticketTypeSelect = document.getElementById('ticketType');
+      const ticketType = ticketTypeSelect.value || selectedType;
+      
+      if (!ticketType) {
+        alert('Please select a ticket type');
+        return;
+      }
       
       const submitBtn = document.getElementById('submitBtn');
       const originalText = submitBtn.innerHTML;
@@ -90,13 +170,11 @@
         return;
       }
       
-      // Show correct total in button
-      const total = (ticketPrice * quantity) + 300;
-      submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> PROCESSING ₦${total.toLocaleString()}...`;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING PAYMENT...';
       submitBtn.disabled = true;
       
       try {
-        console.log('📤 Sending purchase request:', { name, email, phone, ticketType, quantity });
+        console.log('📤 Sending purchase request:', { name, email, phone, ticketType, quantity: 1 });
         
         const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/purchase', {
           method: 'POST',
@@ -104,9 +182,9 @@
           body: JSON.stringify({ 
             name, 
             email, 
-            phone, 
+            phone,
             ticketType,
-            quantity
+            quantity: 1
           })
         });
         
@@ -116,10 +194,10 @@
         if (data.success) {
           sessionStorage.setItem('pendingTicket', JSON.stringify({
             bulkOrderId: data.data.bulkOrderId,
-            quantity: data.data.quantity,
+            ticketId: data.data.ticketId,
             name: name,
             email: email,
-            ticketType: 'FAST FAST'
+            ticketType: ticketType
           }));
           window.location.href = data.data.authorization_url;
         } else {
@@ -186,3 +264,6 @@
       });
     })();
   </script>
+  
+</body>
+</html>

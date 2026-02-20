@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Processing Payment - FTC</title>
+  <title>Processing - FTC</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     body {
@@ -32,15 +32,13 @@
       text-transform: uppercase;
       letter-spacing: 4px;
       margin-bottom: 30px;
-      line-height: 1.2;
     }
     .spinner {
       border: 4px solid rgba(198, 156, 109, 0.2);
       border-top: 4px solid #C69C6D;
-      border-right: 4px solid #8B1E1E;
       border-radius: 50%;
-      width: 70px;
-      height: 70px;
+      width: 60px;
+      height: 60px;
       animation: spin 1s linear infinite;
       margin: 30px auto;
     }
@@ -48,87 +46,30 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    .status-text {
-      color: #F5E6D3;
-      font-size: 1.2rem;
-      margin: 20px 0;
-      line-height: 1.6;
-    }
-    .warning-text {
-      color: #8B1E1E;
-      margin-top: 30px;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-top: 1px solid rgba(139,30,30,0.3);
-      padding-top: 20px;
-    }
-    .reference-id {
-      color: #C69C6D;
-      font-size: 0.9rem;
-      background: rgba(139,30,30,0.2);
-      padding: 8px;
-      border-radius: 4px;
-      margin-top: 15px;
-      word-break: break-all;
-    }
   </style>
 </head>
 <body>
   <div class="processing-container">
     <h1>VERIFYING<br>PAYMENT</h1>
     <div class="spinner"></div>
-    <p class="status-text">Please wait while we confirm your payment with Paystack...</p>
-    <p class="status-text">This may take a few moments</p>
-    <div id="referenceDisplay" class="reference-id"></div>
-    <p class="warning-text">DO NOT CLOSE THIS WINDOW</p>
+    <p style="color: #F5E6D3; margin: 20px 0;">Please wait while we confirm your payment...</p>
   </div>
 
   <script>
     (function() {
-      // Get reference from URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const reference = urlParams.get('reference') || urlParams.get('trxref');
       
-      console.log('💰 Payment callback received');
-      console.log('📝 Reference:', reference);
-      console.log('🔗 Full URL:', window.location.href);
-      
-      // Display reference on page
-      const refDisplay = document.getElementById('referenceDisplay');
-      if (reference) {
-        refDisplay.innerHTML = `Reference: ${reference}`;
-      }
+      console.log('Payment callback received. Reference:', reference);
       
       if (!reference) {
-        console.error('❌ No payment reference found in URL');
-        // Show error message
-        document.querySelector('.status-text').innerHTML = 'No payment reference found.';
-        // Redirect after delay
-        setTimeout(() => {
-          window.location.href = 'https://ftc-march-madness.netlify.app/fail.html?reason=no_reference';
-        }, 3000);
+        window.location.href = '/fail.html?reason=no_reference';
         return;
       }
       
-      // Store reference in sessionStorage
-      try {
-        sessionStorage.setItem('paymentReference', reference);
-        console.log('✅ Reference stored in sessionStorage');
-      } catch (e) {
-        console.warn('⚠️ Could not store in sessionStorage:', e);
-      }
-      
-      // Update status text
-      document.querySelector('.status-text').innerHTML = `Verifying payment reference: ${reference.substring(0, 10)}...`;
-      
-      // Redirect to buy.html for verification
-      console.log('🔄 Redirecting to buy.html for verification...');
-      
-      // Small delay to ensure everything is logged
-      setTimeout(() => {
-        window.location.href = `https://ftc-march-madness.netlify.app/buy.html?reference=${reference}`;
-      }, 1500);
+      // Store reference and redirect to buy.html
+      sessionStorage.setItem('paymentReference', reference);
+      window.location.href = `/buy.html?reference=${reference}`;
     })();
   </script>
 </body>

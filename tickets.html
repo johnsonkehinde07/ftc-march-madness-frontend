@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Tickets - FTC March Madness</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .tickets-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background: rgba(26, 18, 18, 0.98);
+      border: 3px solid #8B1E1E;
+    }
+    .ticket-card {
+      border: 2px solid #8B1E1E;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: rgba(139,30,30,0.1);
+    }
+    .qr-code {
+      max-width: 200px;
+      border: 3px solid #C69C6D;
+      padding: 10px;
+      background: white;
+      margin: 15px auto;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #C69C6D;
+      text-decoration: none;
+      border: 2px solid #8B1E1E;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <header class="logo-header">
+    <div class="logo-group">
+      <img src="pictures/logo.jpeg" alt="FTC" class="logo-img">
+      <span class="logo-text">YOUR TICKETS</span>
+    </div>
+    <a href="index.html" class="back-link">← BACK TO EVENT</a>
+  </header>
+
+  <div class="tickets-container" id="ticketsContainer">
+    <h2 style="color: #C69C6D; text-align: center;">Loading your tickets...</h2>
+  </div>
+
+  <footer>
+    <p>FTC · MARCH MADNESS · support@ftcmarch.com</p>
+  </footer>
+
+  <script>
+    async function loadTickets() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+      const container = document.getElementById('ticketsContainer');
+      
+      if (!email) {
+        container.innerHTML = `
+          <h2 style="color: #C69C6D;">No email provided</h2>
+          <p style="color: #F5E6D3;">Please use the link from your email.</p>
+          <a href="index.html" class="back-link">Go to Home</a>
+        `;
+        return;
+      }
+      
+      try {
+        const response = await fetch(`https://ftc-march-madness-backend-1.onrender.com/api/tickets/check/${encodeURIComponent(email)}`);
+        const data = await response.json();
+        
+        if (data.success && data.hasTicket) {
+          let html = `<h2 style="color: #C69C6D; text-align: center;">Your Tickets (${data.count})</h2>`;
+          
+          data.data.forEach(ticket => {
+            html += `
+              <div class="ticket-card">
+                <p><strong style="color: #C69C6D;">Ticket ID:</strong> <span style="color: #F5E6D3;">${ticket.ticketId}</span></p>
+                <p><strong style="color: #C69C6D;">Name:</strong> <span style="color: #F5E6D3;">${ticket.name}</span></p>
+                <p><strong style="color: #C69C6D;">Type:</strong> <span style="color: #F5E6D3;">${ticket.ticketType}</span></p>
+                <p><strong style="color: #C69C6D;">Status:</strong> <span style="color: ${ticket.scanned ? '#ff6b6b' : '#00ff00'};">${ticket.scanned ? 'Already Used' : 'Valid - Not Used'}</span></p>
+              </div>
+            `;
+          });
+          
+          html += `<p style="text-align: center; margin-top: 20px; color: #F5E6D3;">QR codes were sent to your email. Present them at the entrance.</p>`;
+          container.innerHTML = html;
+        } else {
+          container.innerHTML = `
+            <h2 style="color: #C69C6D;">No Tickets Found</h2>
+            <p style="color: #F5E6D3;">No paid tickets found for ${email}</p>
+            <a href="buy.html" class="back-link">Buy Tickets</a>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading tickets:', error);
+        container.innerHTML = `
+          <h2 style="color: #C69C6D;">Error Loading Tickets</h2>
+          <p style="color: #F5E6D3;">Please try again later or contact support.</p>
+          <a href="index.html" class="back-link">Go to Home</a>
+        `;
+      }
+    }
+    
+    loadTickets();
+  </script>
+</body>
+</html>

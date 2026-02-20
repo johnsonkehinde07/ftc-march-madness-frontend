@@ -41,13 +41,13 @@
         </select>
       </div>
       
-      <!-- QUANTITY SELECTOR - For multiple tickets -->
+      <!-- QUANTITY SELECTOR -->
       <div class="form-group" style="margin-bottom: 20px;">
         <label for="quantity" style="color: var(--secondary-gold); display: block; margin-bottom: 10px; text-align: left; font-weight: 600;">NUMBER OF TICKETS</label>
         <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
-          <button type="button" id="decreaseQty" style="width: 45px; height: 45px; background: var(--primary-red); color: white; border: 2px solid var(--secondary-gold); font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
-          <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" readonly style="width: 80px; text-align: center; padding: 12px; background: rgba(0,0,0,0.5); border: 2px solid var(--primary-red); color: white; font-size: 1.3rem; font-weight: bold;">
-          <button type="button" id="increaseQty" style="width: 45px; height: 45px; background: var(--primary-red); color: white; border: 2px solid var(--secondary-gold); font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+          <button type="button" id="decreaseQty" style="width: 45px; height: 45px; background: var(--primary-red); color: white; border: 2px solid var(--secondary-gold); font-size: 1.8rem; cursor: pointer;">−</button>
+          <input type="number" id="quantity" value="1" min="1" max="10" readonly style="width: 80px; text-align: center; padding: 12px; background: rgba(0,0,0,0.5); border: 2px solid var(--primary-red); color: white; font-size: 1.3rem; font-weight: bold;">
+          <button type="button" id="increaseQty" style="width: 45px; height: 45px; background: var(--primary-red); color: white; border: 2px solid var(--secondary-gold); font-size: 1.8rem; cursor: pointer;">+</button>
         </div>
         <p style="color: #C69C6D; font-size: 0.8rem; margin-top: 8px; text-align: center;">Maximum 10 tickets per purchase</p>
       </div>
@@ -80,101 +80,100 @@
   </footer>
 
   <script>
-    // ========== GET DOM ELEMENTS ==========
-    const priceTag = document.getElementById('priceTag');
-    const availabilityNotice = document.getElementById('availabilityNotice');
-    const submitBtn = document.getElementById('submitBtn');
-    const ticketTypeSelect = document.getElementById('ticketType');
-    const quantityInput = document.getElementById('quantity');
-    const decreaseBtn = document.getElementById('decreaseQty');
-    const increaseBtn = document.getElementById('increaseQty');
-    
-    // ========== STATE ==========
-    let selectedTypeData = null;
-    
-    // ========== FETCH TICKET TYPES ==========
-    async function loadTicketTypes() {
-      try {
-        const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/types');
-        const data = await response.json();
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      // Get all elements
+      const priceTag = document.getElementById('priceTag');
+      const availabilityNotice = document.getElementById('availabilityNotice');
+      const submitBtn = document.getElementById('submitBtn');
+      const ticketTypeSelect = document.getElementById('ticketType');
+      const quantityInput = document.getElementById('quantity');
+      const decreaseBtn = document.getElementById('decreaseQty');
+      const increaseBtn = document.getElementById('increaseQty');
+      const ticketForm = document.getElementById('ticketForm');
+      
+      let selectedTicketType = null;
+      let ticketTypes = [];
+      
+      // Load ticket types
+      fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/types')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Ticket types loaded:', data);
+          
+          if (data.success && data.data.length > 0) {
+            ticketTypes = data.data;
+            
+            // Clear loading options
+            ticketTypeSelect.innerHTML = '<option value="">-- Choose ticket type --</option>';
+            
+            // Add each ticket type to dropdown
+            ticketTypes.forEach(type => {
+              const option = document.createElement('option');
+              option.value = type.name;
+              option.textContent = `${type.name} - ₦${type.price.toLocaleString()} (${type.available} left)`;
+              option.dataset.price = type.price;
+              option.dataset.available = type.available;
+              ticketTypeSelect.appendChild(option);
+            });
+            
+            // Update price tag
+            priceTag.innerHTML = '<i class="fas fa-clock"></i> SELECT TICKET TYPE';
+            
+          } else {
+            priceTag.innerHTML = '<i class="fas fa-clock"></i> SOLD OUT';
+            availabilityNotice.innerHTML = '<i class="fas fa-exclamation-circle"></i> No tickets available';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading tickets:', error);
+          priceTag.innerHTML = '<i class="fas fa-clock"></i> ERROR LOADING TICKETS';
+          availabilityNotice.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please refresh the page';
+        });
+      
+      // When ticket type changes
+      ticketTypeSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
         
-        if (data.success && data.data.length > 0) {
-          // Clear dropdown
-          ticketTypeSelect.innerHTML = '<option value="">-- Choose ticket type --</option>';
+        if (selectedOption.value) {
+          const price = parseInt(selectedOption.dataset.price);
+          const available = parseInt(selectedOption.dataset.available);
           
-          // Add each ticket type
-          data.data.forEach(type => {
-            const option = document.createElement('option');
-            option.value = type.name;
-            option.textContent = `${type.name} - ₦${type.price.toLocaleString()} (${type.available} left)`;
-            option.dataset.price = type.price;
-            option.dataset.available = type.available;
-            option.dataset.limit = type.limit;
-            ticketTypeSelect.appendChild(option);
-          });
+          selectedTicketType = {
+            name: selectedOption.value,
+            price: price,
+            available: available
+          };
           
-          // Enable dropdown
-          ticketTypeSelect.disabled = false;
-          priceTag.innerHTML = '<i class="fas fa-clock"></i> SELECT TICKET TYPE';
+          // Reset quantity to 1
+          quantityInput.value = 1;
+          
+          // Update displays
+          priceTag.innerHTML = `<i class="fas fa-clock"></i> ${selectedOption.value} · ₦${price.toLocaleString()}`;
+          availabilityNotice.innerHTML = `<i class="fas fa-info-circle"></i> ${available} tickets left · ${selectedOption.value}`;
+          submitBtn.disabled = false;
+          
+          // Calculate total
+          const total = price + 300;
+          submitBtn.innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} NOW`;
           
         } else {
-          priceTag.innerHTML = '<i class="fas fa-clock"></i> SOLD OUT';
-          availabilityNotice.innerHTML = '<i class="fas fa-exclamation-circle"></i> No tickets available';
+          // No type selected
+          priceTag.innerHTML = '<i class="fas fa-clock"></i> SELECT TICKET TYPE';
+          availabilityNotice.innerHTML = '<i class="fas fa-info-circle"></i> Select a ticket type';
           submitBtn.disabled = true;
-          submitBtn.innerHTML = 'SOLD OUT';
+          submitBtn.innerHTML = 'SELECT TICKET TYPE';
+          selectedTicketType = null;
         }
-      } catch (error) {
-        console.error('Error loading tickets:', error);
-        priceTag.innerHTML = '<i class="fas fa-clock"></i> ERROR LOADING TICKETS';
-      }
-    }
-    
-    // ========== UPDATE PRICE WHEN TICKET TYPE CHANGES ==========
-    ticketTypeSelect.addEventListener('change', function() {
-      const selected = this.options[this.selectedIndex];
+      });
       
-      if (selected.value) {
-        const price = parseInt(selected.dataset.price);
-        const available = parseInt(selected.dataset.available);
-        
-        selectedTypeData = {
-          name: selected.value,
-          price: price,
-          available: available
-        };
-        
-        // Reset quantity to 1
-        quantityInput.value = 1;
-        
-        // Update display
-        priceTag.innerHTML = `<i class="fas fa-clock"></i> ${selected.value} · ₦${price.toLocaleString()}`;
-        availabilityNotice.innerHTML = `<i class="fas fa-info-circle"></i> ${available} tickets left · ${selected.value}`;
-        submitBtn.disabled = false;
-        
-        // Update total price
-        updateTotalPrice();
-        
-      } else {
-        // No type selected
-        priceTag.innerHTML = '<i class="fas fa-clock"></i> SELECT TICKET TYPE';
-        availabilityNotice.innerHTML = '<i class="fas fa-info-circle"></i> Select a ticket type';
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'SELECT TICKET TYPE';
-        selectedTypeData = null;
-      }
-    });
-    
-    // ========== UPDATE TOTAL PRICE BASED ON QUANTITY ==========
-    function updateTotalPrice() {
-      if (!selectedTypeData || !submitBtn) return;
-      
-      const quantity = parseInt(quantityInput.value) || 1;
-      const total = (selectedTypeData.price * quantity) + 300;
-      submitBtn.innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} for ${quantity} ticket(s)`;
-    }
-    
-    // ========== QUANTITY BUTTONS ==========
-    if (decreaseBtn) {
+      // Quantity decrease
       decreaseBtn.addEventListener('click', function() {
         let val = parseInt(quantityInput.value);
         if (val > 1) {
@@ -182,123 +181,132 @@
           updateTotalPrice();
         }
       });
-    }
-    
-    if (increaseBtn) {
+      
+      // Quantity increase
       increaseBtn.addEventListener('click', function() {
         let val = parseInt(quantityInput.value);
-        if (val < 10 && selectedTypeData && val < selectedTypeData.available) {
+        if (selectedTicketType && val < selectedTicketType.available && val < 10) {
           quantityInput.value = val + 1;
           updateTotalPrice();
-        } else if (selectedTypeData && val >= selectedTypeData.available) {
-          alert(`Only ${selectedTypeData.available} tickets available`);
+        } else if (selectedTicketType && val >= selectedTicketType.available) {
+          alert(`Only ${selectedTicketType.available} tickets available`);
+        } else if (val < 10) {
+          quantityInput.value = val + 1;
+          updateTotalPrice();
         }
       });
-    }
-    
-    // ========== LOAD TICKETS WHEN PAGE LOADS ==========
-    loadTicketTypes();
-    
-    // ========== HANDLE FORM SUBMISSION ==========
-    document.getElementById('ticketForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
       
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const quantity = parseInt(quantityInput.value) || 1;
-      const ticketType = ticketTypeSelect.value;
-      
-      if (!ticketType) {
-        alert('Please select a ticket type');
-        return;
-      }
-      
-      if (!email.includes('@') || !email.includes('.')) {
-        alert('Please enter a valid email address');
-        return;
-      }
-      
-      if (name.length < 2) {
-        alert('Please enter your full name');
-        return;
-      }
-      
-      const originalText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
-      submitBtn.disabled = true;
-      
-      try {
-        const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/purchase', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, phone, ticketType, quantity })
-        });
+      // Update total price based on quantity
+      function updateTotalPrice() {
+        if (!selectedTicketType || !submitBtn) return;
         
-        const data = await response.json();
+        const quantity = parseInt(quantityInput.value) || 1;
+        const total = (selectedTicketType.price * quantity) + 300;
+        submitBtn.innerHTML = `<i class="fas fa-lock"></i> PAY ₦${total.toLocaleString()} for ${quantity} ticket(s)`;
+      }
+      
+      // Form submission
+      ticketForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        if (data.success) {
-          sessionStorage.setItem('pendingTicket', JSON.stringify({
-            bulkOrderId: data.data.bulkOrderId,
-            quantity: quantity,
-            name: name,
-            email: email,
-            ticketType: ticketType
-          }));
-          window.location.href = data.data.authorization_url;
-        } else {
-          alert('Error: ' + data.message);
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const quantity = parseInt(quantityInput.value) || 1;
+        const ticketType = ticketTypeSelect.value;
+        
+        if (!ticketType) {
+          alert('Please select a ticket type');
+          return;
+        }
+        
+        if (!email.includes('@') || !email.includes('.')) {
+          alert('Please enter a valid email address');
+          return;
+        }
+        
+        if (name.length < 2) {
+          alert('Please enter your full name');
+          return;
+        }
+        
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+        submitBtn.disabled = true;
+        
+        try {
+          const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, phone, ticketType, quantity })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            sessionStorage.setItem('pendingTicket', JSON.stringify({
+              bulkOrderId: data.data.bulkOrderId,
+              quantity: quantity,
+              name: name,
+              email: email,
+              ticketType: ticketType
+            }));
+            window.location.href = data.data.authorization_url;
+          } else {
+            alert('Error: ' + data.message);
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Network error. Please try again.');
           submitBtn.innerHTML = originalText;
           submitBtn.disabled = false;
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Network error. Please try again.');
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-      }
-    });
-    
-    // ========== CHECK PAYMENT RETURN ==========
-    (function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const reference = urlParams.get('reference') || urlParams.get('trxref');
+      });
       
-      if (!reference) return;
-      
-      priceTag.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING PAYMENT...';
-      submitBtn.disabled = true;
-      window.history.replaceState({}, document.title, window.location.pathname);
-      
-      fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/verify-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reference })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          sessionStorage.setItem('ticketData', JSON.stringify(data.data));
-          window.location.href = 'success.html';
-        } else {
+      // Check payment return
+      (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const reference = urlParams.get('reference') || urlParams.get('trxref');
+        
+        if (!reference) return;
+        
+        priceTag.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING PAYMENT...';
+        submitBtn.disabled = true;
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reference })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            sessionStorage.setItem('ticketData', JSON.stringify(data.data));
+            window.location.href = 'success.html';
+          } else {
+            const pending = sessionStorage.getItem('pendingTicket');
+            if (pending) {
+              sessionStorage.setItem('ticketData', pending);
+              window.location.href = 'success.html';
+            } else {
+              window.location.href = 'fail.html';
+            }
+          }
+        })
+        .catch(() => {
           const pending = sessionStorage.getItem('pendingTicket');
           if (pending) {
-            sessionStorage.setItem('ticketData', pending);
-            window.location.href = 'success.html';
+            setTimeout(() => window.location.href = 'success.html', 3000);
           } else {
             window.location.href = 'fail.html';
           }
-        }
-      })
-      .catch(() => {
-        const pending = sessionStorage.getItem('pendingTicket');
-        if (pending) {
-          setTimeout(() => window.location.href = 'success.html', 3000);
-        } else {
-          window.location.href = 'fail.html';
-        }
-      });
-    })();
+        });
+      })();
+      
+    });
   </script>
   
 </body>

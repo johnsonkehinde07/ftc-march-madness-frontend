@@ -51,24 +51,26 @@
       
       let ticketHtml = '<div style="background: rgba(139,30,30,0.2); border: 2px solid #8B1E1E; padding: 20px; margin: 20px 0; text-align: left;">';
       
-      if (ticketData.count > 1) {
-        // Multiple tickets
+      // Check if it's multiple tickets
+      if (ticketData.count && ticketData.count > 1) {
         ticketHtml += `<p><strong>TOTAL TICKETS:</strong> ${ticketData.count}</p>`;
-        ticketData.tickets.forEach(t => {
-          ticketHtml += `<p><strong>TICKET ID:</strong> ${t.ticketId}</p>`;
-          ticketHtml += `<p><strong>NAME:</strong> ${t.name}</p>`;
-          ticketHtml += `<p><strong>TYPE:</strong> ${t.ticketType}</p>`;
-          ticketHtml += `<hr style="border-color: #8B1E1E; opacity: 0.3;">`;
-        });
+        if (ticketData.tickets) {
+          ticketData.tickets.forEach(t => {
+            ticketHtml += `<p><strong>TICKET ID:</strong> ${t.ticketId}</p>`;
+            ticketHtml += `<p><strong>NAME:</strong> ${t.name}</p>`;
+            ticketHtml += `<p><strong>TYPE:</strong> ${t.ticketType || 'RUNNER UP'}</p>`;
+            ticketHtml += `<hr style="border-color: #8B1E1E; opacity: 0.3;">`;
+          });
+        }
       } else {
         // Single ticket
-        const t = ticketData.tickets ? ticketData.tickets[0] : ticketData;
+        const ticket = ticketData.tickets ? ticketData.tickets[0] : ticketData;
         ticketHtml += `
-          <p><strong>TICKET ID:</strong> ${t.ticketId}</p>
-          <p><strong>NAME:</strong> ${t.name}</p>
-          <p><strong>EMAIL:</strong> ${t.email}</p>
-          <p><strong>TICKET TYPE:</strong> ${t.ticketType || 'WINNERS FC'}</p>
-          <p><strong>PRICE:</strong> ₦${t.price || 8000}</p>
+          <p><strong>TICKET ID:</strong> ${ticket.ticketId}</p>
+          <p><strong>NAME:</strong> ${ticket.name}</p>
+          <p><strong>EMAIL:</strong> ${ticket.email}</p>
+          <p><strong>TICKET TYPE:</strong> ${ticket.ticketType || 'RUNNER UP'}</p>
+          <p><strong>PRICE:</strong> ₦${ticket.price || 8700}</p>
         `;
       }
       

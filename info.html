@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>FTC · EVENT INFO</title>
+  
+  <!-- Open Graph / Social Media Meta Tags -->
+  <meta property="og:title" content="FTC presents MARCH MADNESS - Info" />
+  <meta property="og:description" content="All you need to know about March Madness beach party" />
+  <meta property="og:image" content="https://ftc-march-madness-frontend.onrender.com/pictures/logo.jpeg" /> 
+  <meta property="og:url" content="https://ftc-march-madness-frontend.onrender.com/info.html" />
+  <meta property="og:type" content="website" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-red: #8B1E1E;
+      --secondary-gold: #C69C6D;
+      --dark-charcoal: #1A1212;
+      --off-white: #F5E6D3;
+      --sand: #DCC7B0;
+      --accent-burgundy: #5C1A1A;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark-charcoal);
+      color: var(--off-white);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(26, 18, 18, 0.98);
+      border-bottom: 3px solid var(--primary-red);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-img {
+      height: 40px;
+      width: auto;
+      border-radius: 4px;
+      border: 2px solid var(--secondary-gold);
+    }
+
+    .logo-text {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--secondary-gold);
+      letter-spacing: 1px;
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.5rem;
+      color: var(--secondary-gold);
+      background: none;
+      border: 1px solid var(--primary-red);
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--sand);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--secondary-gold);
+    }
+
+    .nav-links a i {
+      margin-right: 4px;
+      color: var(--primary-red);
+    }
+
+    .buy-link {
+      background: var(--primary-red);
+      border: 2px solid var(--secondary-gold);
+      padding: 8px 16px !important;
+      color: white !important;
+    }
+
+    /* ===== INFO PAGE STYLES ===== */
+    .info-header {
+      text-align: center;
+      padding: 40px 20px 20px;
+      border-bottom: 1px solid rgba(198,156,109,0.2);
+    }
+
+    .info-header h1 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--secondary-gold);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+
+    .info-header p {
+      color: var(--sand);
+      font-size: 1rem;
+    }
+
+    .info-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .info-section {
+      background: rgba(26, 18, 18, 0.8);
+      border: 2px solid var(--primary-red);
+      margin-bottom: 30px;
+      padding: 25px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--secondary-gold);
+    }
+
+    .section-title i {
+      font-size: 1.8rem;
+      color: var(--secondary-gold);
+    }
+
+    .section-title h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--off-white);
+      letter-spacing: 2px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .info-item {
+      background: rgba(139,30,30,0.1);
+      border: 1px solid var(--primary-red);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .info-item i {
+      font-size: 2rem;
+      color: var(--secondary-gold);
+      margin-bottom: 12px;
+    }
+
+    .info-item h3 {
+      color: var(--secondary-gold);
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .info-item p {
+      color: var(--off-white);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .info-item .note {
+      color: var(--sand);
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    /* FAQ */
+    .faq-item {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed rgba(198,156,109,0.3);
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 10px 0;
+    }
+
+    .faq-question h3 {
+      color: var(--secondary-gold);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .faq-question i {
+      color: var(--primary-red);
+      transition: transform 0.3s;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 15px 0 5px;
+      color: var(--sand);
+    }
+
+    .faq-answer.active {
+      display: block;
+    }
+
+    /* Contact section */
+    .contact-section {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #25D366;
+      color: white;
+      padding: 18px 40px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      border: 2px solid var(--secondary-gold);
+      margin: 10px;
+      transition: 0.2s;
+    }
+
+    .whatsapp-btn:hover {
+      background: #128C7E;
+      transform: scale(1.02);
+    }
+
+    .whatsapp-btn i {
+      font-size: 1.5rem;
+    }
+
+    .contact-note {
+      color: var(--sand);
+      margin-top: 15px;
+      font-size: 0.9rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: rgba(26, 18, 18, 0.95);
+      border-top: 3px solid var(--primary-red);
+      padding: 30px 16px;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .social-links a {
+      color: var(--secondary-gold);
+      font-size: 1.3rem;
+    }
+
+    .footer p {
+      font-size: 0.8rem;
+      color: var(--sand);
+      margin: 4px 0;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(26, 18, 18, 0.98);
+        padding: 20px;
+        gap: 16px;
+        border-bottom: 3px solid var(--primary-red);
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="logo-container">
+      <img src="pictures/logo.jpeg" alt="FTC" class="logo-img">
+      <span class="logo-text">FTC</span>
+    </div>
+    
+    <div class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="nav-links" id="navLinks">
+      <a href="index.html"><i class="fas fa-home"></i> HOME</a>
+      <a href="buy.html"><i class="fas fa-ticket"></i> TICKETS</a>
+      <a href="info.html" style="color: var(--secondary-gold);"><i class="fas fa-info-circle"></i> INFO</a>
+      <a href="buy.html" class="buy-link"><i class="fas fa-bolt"></i> BUY NOW</a>
+    </div>
+  </nav>
+
+  <!-- ===== INFO HEADER ===== -->
+  <div class="info-header">
+    <h1>EVENT INFO</h1>
+    <p>Everything you need to know about March Madness</p>
+  </div>
+
+  <div class="info-container">
+    
+    <!-- EVENT DETAILS SECTION -->
+    <div class="info-section">
+      <div class="section-title">
+        <i class="fas fa-calendar-alt"></i>
+        <h2>EVENT DETAILS</h2>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <i class="fas fa-clock"></i>
+          <h3>DOORS OPEN</h3>
+          <p>6:00 PM</p>
+          <p class="note">March 7, 2026</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <h3>LOCATION</h3>
+          <p>KODO BEACH HOUSE</p>
+          <p class="note">Lagos</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-music"></i>
+          <h3>LINEUP</h3>
+          <p>TBA</p>
+          <p class="note">Coming soon</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-tshirt"></i>
+          <h3>DRESS CODE</h3>
+          <p>Dress Nice</p>
+          <p class="note">Look your best</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ SECTION -->
+    <div class="info-section">
+      <div class="section-title">
+        <i class="fas fa-question-circle"></i>
+        <h2>FAQ</h2>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>How do I get my ticket?</h3>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          After purchase, your ticket with QR code will be sent to your email within 5 minutes. Check your spam folder if you don't see it.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>What's the refund policy?</h3>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          All ticket sales are final. No refunds or exchanges.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>Can I transfer my ticket?</h3>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="faq-answer">
+          Tickets are non-transferable. The name on the ticket must match your ID.
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT SECTION - UPDATED WITH YOUR WHATSAPP NUMBER -->
+    <div class="contact-section">
+      <a href="https://wa.me/2349079681750" class="whatsapp-btn" target="_blank">
+        <i class="fab fa-whatsapp"></i> CHAT ON WHATSAPP
+      </a>
+      <p class="contact-note">Quick response within 2 hours</p>
+    </div>
+
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="social-links">
+      <a href="https://www.instagram.com/freedomtocreate_" target="_blank">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="#"><i class="fab fa-x-twitter"></i></a>
+      <a href="#"><i class="fab fa-tiktok"></i></a>
+    </div>
+    <p>FTC · MARCH MADNESS</p>
+    <p class="copyright">© 2026 · FTC · ALL RIGHTS RESERVED</p>
+  </footer>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      const icon = menuToggle.querySelector('i');
+      icon.classList.toggle('fa-bars');
+      icon.classList.toggle('fa-times');
+    });
+
+    // Close menu when clicking a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        menuToggle.querySelector('i').classList.add('fa-bars');
+        menuToggle.querySelector('i').classList.remove('fa-times');
+      });
+    });
+
+    // FAQ toggle function
+    window.toggleFaq = function(element) {
+      const answer = element.nextElementSibling;
+      const icon = element.querySelector('i');
+      
+      answer.classList.toggle('active');
+      
+      if (answer.classList.contains('active')) {
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+      } else {
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+      }
+    }
+  </script>
+</body>
+</html>

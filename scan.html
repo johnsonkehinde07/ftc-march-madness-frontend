@@ -93,74 +93,91 @@
     </footer>
 
     <script>
-        // This function sends the ticket data to your backend
-        function validateTicket(ticketData) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = 'Validating...';
-            resultDiv.className = '';
+    // This function sends the ticket data to your backend
+    function validateTicket(ticketData) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = 'Validating...';
+        resultDiv.className = '';
 
-            // The scanner gives us a string. It should be JSON, but might be just the ID.
-            let payload = { qrData: ticketData };
+        console.log('Raw scanned data:', ticketData); // DEBUG - SEE WHAT'S COMING
+
+        // Create payload - send exactly what we got
+        // Your validate.js handles both JSON and plain text
+        let payload = { qrData: ticketData };
+        
+        console.log('Sending payload:', payload);
+
+        fetch('https://ftc-march-madness-backend-1.onrender.com/api/validate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server response:', data); // DEBUG
             
-
-            fetch('https://ftc-march-madness-backend-1.onrender.com/api/validate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    resultDiv.innerHTML = `✅ VALID<br>Welcome, ${data.data.name}!`;
-                    resultDiv.className = 'valid';
-                } else {
-                    resultDiv.innerHTML = `❌ INVALID<br>${data.message}`;
-                    resultDiv.className = 'invalid';
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                resultDiv.innerHTML = '❌ ERROR<br>Could not connect to server.';
+            if (data.success) {
+                resultDiv.innerHTML = `✅ VALID<br>Welcome, ${data.data.name}!`;
+                resultDiv.className = 'valid';
+            } else {
+                resultDiv.innerHTML = `❌ INVALID<br>${data.message}`;
                 resultDiv.className = 'invalid';
-            });
-        }
-
-        // For manual entry fallback
-        function validateManual() {
-            const ticketId = document.getElementById('manualTicketId').value;
-            if (!ticketId) {
-                alert('Enter a Ticket ID');
-                return;
             }
-            // Simulate a QR code object for the manual entry
-            validateTicket(JSON.stringify({ ticketId: ticketId }));
-        }
-
-        // --- Scanner Configuration ---
-        const html5QrCode = new Html5Qrcode("reader");
-
-        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-            // Stop scanning once we get a result
-            html5QrCode.stop().then(() => {
-                console.log("QR Scanner stopped.");
-                validateTicket(decodedText);
-            }).catch(err => {
-                console.log("Error stopping scanner.", err);
-                validateTicket(decodedText);
-            });
-        };
-
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-        // Start scanning when page loads
-        html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
-        .catch(err => {
-            console.log("Unable to start scanner:", err);
-            document.getElementById('result').innerHTML = 'Camera error. Use manual entry.';
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            resultDiv.innerHTML = '❌ ERROR<br>Could not connect to server.';
+            resultDiv.className = 'invalid';
         });
+    }
 
-    </script>
+    // For manual entry fallback - FIXED
+    function validateManual() {
+        const ticketId = document.getElementById('manualTicketId').value.trim();
+        if (!ticketId) {
+            alert('Enter a Ticket ID');
+            return;
+        }
+        // Send just the ticket ID as string - your backend handles this
+        validateTicket(ticketId);
+    }
+
+    // --- Scanner Configuration ---
+    const html5QrCode = new Html5Qrcode("reader");
+
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+        console.log('QR Code scanned:', decodedText); // DEBUG
+        
+        // Stop scanning once we get a result
+        html5QrCode.stop().then(() => {
+            console.log("QR Scanner stopped.");
+            validateTicket(decodedText);
+        }).catch(err => {
+            console.log("Error stopping scanner.", err);
+            validateTicket(decodedText);
+        });
+    };
+
+    const config = { 
+        fps: 10, 
+        qrbox: { width: 250, height: 250 },
+        rememberLastUsedCamera: true,
+        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+    };
+
+    // Start scanning when page loads
+    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+    .catch(err => {
+        console.log("Unable to start scanner:", err);
+        document.getElementById('result').innerHTML = 'Camera error. Use manual entry.';
+    });
+
+    // Also add a restart button option
+    function restartScanner() {
+        html5QrCode.resume();
+    }
+</script>
 </body>
 </html>

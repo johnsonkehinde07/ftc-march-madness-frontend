@@ -99,14 +99,16 @@
         resultDiv.innerHTML = 'Validating...';
         resultDiv.className = '';
 
-        console.log('Raw scanned data:', ticketData); // DEBUG - SEE WHAT'S COMING
+        // STEP 1: Log exactly what we received
+        console.log('🔍 STEP 1 - Raw scanned data:', ticketData);
+        console.log('Type of data:', typeof ticketData);
+        console.log('Length:', ticketData?.length);
 
-        // Create payload - send exactly what we got
-        // Your validate.js handles both JSON and plain text
+        // STEP 2: Create payload
         let payload = { qrData: ticketData };
-        
-        console.log('Sending payload:', payload);
+        console.log('📦 STEP 2 - Payload being sent:', payload);
 
+        // STEP 3: Send to backend
         fetch('https://ftc-march-madness-backend-1.onrender.com/api/validate', {
             method: 'POST',
             headers: {
@@ -114,9 +116,12 @@
             },
             body: JSON.stringify(payload)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('📥 STEP 3 - Response status:', response.status);
+            return response.json();
+        })
         .then(data => {
-            console.log('Server response:', data); // DEBUG
+            console.log('📋 STEP 4 - Server response:', data);
             
             if (data.success) {
                 resultDiv.innerHTML = `✅ VALID<br>Welcome, ${data.data.name}!`;
@@ -127,20 +132,20 @@
             }
         })
         .catch((error) => {
-            console.error('Error:', error);
+            console.error('❌ STEP 5 - Error:', error);
             resultDiv.innerHTML = '❌ ERROR<br>Could not connect to server.';
             resultDiv.className = 'invalid';
         });
     }
 
-    // For manual entry fallback - FIXED
+    // For manual entry fallback
     function validateManual() {
         const ticketId = document.getElementById('manualTicketId').value.trim();
         if (!ticketId) {
             alert('Enter a Ticket ID');
             return;
         }
-        // Send just the ticket ID as string - your backend handles this
+        console.log('🔍 Manual entry:', ticketId);
         validateTicket(ticketId);
     }
 
@@ -148,11 +153,13 @@
     const html5QrCode = new Html5Qrcode("reader");
 
     const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        console.log('QR Code scanned:', decodedText); // DEBUG
+        console.log('✅ QR Code scanned successfully!');
+        console.log('Decoded text:', decodedText);
+        console.log('Full result:', decodedResult);
         
         // Stop scanning once we get a result
         html5QrCode.stop().then(() => {
-            console.log("QR Scanner stopped.");
+            console.log("🛑 Scanner stopped.");
             validateTicket(decodedText);
         }).catch(err => {
             console.log("Error stopping scanner.", err);
@@ -162,9 +169,7 @@
 
     const config = { 
         fps: 10, 
-        qrbox: { width: 250, height: 250 },
-        rememberLastUsedCamera: true,
-        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+        qrbox: { width: 250, height: 250 }
     };
 
     // Start scanning when page loads
@@ -173,11 +178,6 @@
         console.log("Unable to start scanner:", err);
         document.getElementById('result').innerHTML = 'Camera error. Use manual entry.';
     });
-
-    // Also add a restart button option
-    function restartScanner() {
-        html5QrCode.resume();
-    }
 </script>
 </body>
 </html>

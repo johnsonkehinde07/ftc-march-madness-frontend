@@ -4,180 +4,533 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FTC · Scanner</title>
-    <!-- Your existing style sheet -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- QrCode Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
-        /* Simple scanner page styles */
-        .scanner-container {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: #1A1212;
+            color: #F5E6D3;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(26, 18, 18, 0.98);
+            border-bottom: 3px solid #8B1E1E;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+            border: 2px solid #C69C6D;
+        }
+
+        .logo span {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #C69C6D;
+        }
+
+        .back-link {
+            color: #C69C6D;
+            text-decoration: none;
+            border: 1px solid #8B1E1E;
+            padding: 8px 15px;
+        }
+
+        .container {
             max-width: 600px;
             margin: 20px auto;
-            padding: 20px;
-            background: rgba(26, 18, 18, 0.95);
-            border: 3px solid var(--primary-red);
-            text-align: center;
+            padding: 0 15px;
         }
-        #reader {
-            width: 100%;
-            border: 2px solid var(--secondary-gold);
-            background: black;
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
             margin-bottom: 20px;
         }
-        #result {
-            font-size: 1.5rem;
-            font-weight: bold;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 0;
+
+        .mode-btn {
+            flex: 1;
+            background: none;
+            border: 2px solid #C69C6D;
+            color: #DCC7B0;
+            padding: 12px;
+            font-size: 1rem;
+            cursor: pointer;
         }
+
+        .mode-btn.active {
+            background: #8B1E1E;
+            color: white;
+            border-color: #C69C6D;
+        }
+
+        .scanner-box, .manual-box {
+            background: rgba(26, 18, 18, 0.95);
+            border: 3px solid #8B1E1E;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #reader {
+            width: 100%;
+            border: 2px solid #C69C6D;
+            background: black;
+            margin-bottom: 15px;
+        }
+
+        .result {
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 100px;
+        }
+
         .valid {
             background: #004d00;
             color: #00ff00;
-            border: 2px solid #00ff00;
+            border: 3px solid #00ff00;
         }
+
         .invalid {
             background: #4d0000;
             color: #ff6b6b;
-            border: 2px solid #ff6b6b;
+            border: 3px solid #ff6b6b;
         }
-        .back-link {
-            display: block;
-            margin-top: 30px;
-            color: var(--secondary-gold);
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
-        .manual-input {
-            margin-top: 20px;
-            padding: 15px;
-            border-top: 1px solid var(--primary-red);
-        }
-        #manualTicketId {
-            padding: 10px;
-            width: 70%;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--primary-red);
+
+        .btn {
+            flex: 1;
+            background: #8B1E1E;
+            border: 2px solid #C69C6D;
             color: white;
+            padding: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #C69C6D;
+            color: #1A1212;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #8B1E1E;
+            color: #F5E6D3;
+            font-size: 1rem;
+        }
+
+        .input-group select option {
+            background: #333;
+        }
+
+        .recent-box {
+            background: rgba(26, 18, 18, 0.95);
+            border: 2px solid #8B1E1E;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .recent-title {
+            color: #C69C6D;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .recent-list {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        .recent-item {
+            padding: 8px;
+            border-bottom: 1px solid rgba(198,156,109,0.2);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .valid-item {
+            color: #00ff00;
+        }
+
+        .invalid-item {
+            color: #ff6b6b;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #DCC7B0;
+            font-size: 0.8rem;
+            border-top: 1px solid #8B1E1E;
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
 
-    <header class="logo-header">
-        <div class="logo-group">
-            <img src="pictures/logo.jpeg" alt="FTC" class="logo-img">
-            <span class="logo-text">SCANNER</span>
+    <div class="header">
+        <div class="logo">
+            <img src="pictures/logo.jpeg" alt="FTC">
+            <span>SCANNER</span>
         </div>
         <a href="index.html" class="back-link">← EXIT</a>
-    </header>
+    </div>
 
-    <div class="scanner-container">
-        <h2 style="color: var(--secondary-gold);">VALIDATE ENTRY</h2>
-        <p>Scan the QR code from the ticket email.</p>
+    <div class="container">
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <button class="mode-btn active" id="scanModeBtn">📷 SCAN MODE</button>
+            <button class="mode-btn" id="manualModeBtn">⌨️ MANUAL MODE</button>
+        </div>
 
-        <!-- Scanner will start here -->
-        <div id="reader"></div>
+        <!-- Scanner Mode -->
+        <div class="scanner-box" id="scannerMode">
+            <div style="text-align: center; color: #C69C6D; margin-bottom: 10px;">
+                <strong>SCAN QR CODE</strong>
+            </div>
+            <div id="reader"></div>
+            <div class="result" id="scanResult">Ready to scan...</div>
+            <div class="btn-group">
+                <button class="btn" id="rescanBtn">🔄 SCAN ANOTHER</button>
+                <button class="btn" id="switchToManualBtn">⌨️ MANUAL</button>
+            </div>
+        </div>
 
-        <!-- Validation result shows here -->
-        <div id="result">Waiting for scan...</div>
+        <!-- Manual Mode -->
+        <div class="manual-box" id="manualMode" style="display: none;">
+            <div style="text-align: center; color: #C69C6D; margin-bottom: 10px;">
+                <strong>MANUAL ENTRY</strong>
+            </div>
+            <div class="input-group">
+                <input type="text" id="manualInput" placeholder="Enter short code or ticket ID">
+                <select id="searchType">
+                    <option value="auto">Auto Detect</option>
+                    <option value="shortcode">Short Code (6 chars)</option>
+                    <option value="ticketid">Full Ticket ID</option>
+                    <option value="email">Email Address</option>
+                </select>
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="verifyBtn">✓ VERIFY</button>
+                <button class="btn" id="clearBtn">✗ CLEAR</button>
+            </div>
+            <div class="result" id="manualResult">Enter a code to verify</div>
+        </div>
 
-        <!-- Manual fallback in case camera doesn't work -->
-        <div class="manual-input">
-            <p style="color: var(--secondary-gold);">Manual Entry</p>
-            <input type="text" id="manualTicketId" placeholder="Enter Ticket ID">
-            <button class="btn" style="padding: 10px 20px; margin-top: 10px;" onclick="validateManual()">Check</button>
+        <!-- Recent Scans -->
+        <div class="recent-box">
+            <div class="recent-title">
+                <span>📋 RECENT SCANS</span>
+                <button onclick="clearRecent()" style="background: none; border: none; color: #DCC7B0; cursor: pointer;">🗑️</button>
+            </div>
+            <div class="recent-list" id="recentList">
+                <div style="color: #DCC7B0; text-align: center;">No recent scans</div>
+            </div>
         </div>
     </div>
 
-    <footer style="margin-top: 20px;">
+    <div class="footer">
         <p>FTC · MARCH MADNESS · VALIDATION TERMINAL</p>
-    </footer>
+    </div>
 
     <script>
-    // This function sends the ticket data to your backend
-    function validateTicket(ticketData) {
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = 'Validating...';
-        resultDiv.className = '';
+        // ========== VARIABLES ==========
+        let scanner = null;
+        let isScanning = false;
+        let recentScans = [];
 
-        // STEP 1: Log exactly what we received
-        console.log('🔍 STEP 1 - Raw scanned data:', ticketData);
-        console.log('Type of data:', typeof ticketData);
-        console.log('Length:', ticketData?.length);
+        // DOM Elements
+        const scanModeBtn = document.getElementById('scanModeBtn');
+        const manualModeBtn = document.getElementById('manualModeBtn');
+        const scannerMode = document.getElementById('scannerMode');
+        const manualMode = document.getElementById('manualMode');
+        const scanResult = document.getElementById('scanResult');
+        const manualResult = document.getElementById('manualResult');
+        const recentList = document.getElementById('recentList');
+        const rescanBtn = document.getElementById('rescanBtn');
+        const switchToManualBtn = document.getElementById('switchToManualBtn');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const manualInput = document.getElementById('manualInput');
+        const searchType = document.getElementById('searchType');
 
-        // STEP 2: Create payload
-        let payload = { qrData: ticketData };
-        console.log('📦 STEP 2 - Payload being sent:', payload);
+        // ========== INITIALIZE ==========
+        window.onload = function() {
+            startScanner();
+            loadRecent();
+        };
 
-        // STEP 3: Send to backend
-        fetch('https://ftc-march-madness-backend-1.onrender.com/api/validate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(response => {
-            console.log('📥 STEP 3 - Response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('📋 STEP 4 - Server response:', data);
-            
-            if (data.success) {
-                resultDiv.innerHTML = `✅ VALID<br>Welcome, ${data.data.name}!`;
-                resultDiv.className = 'valid';
-            } else {
-                resultDiv.innerHTML = `❌ INVALID<br>${data.message}`;
-                resultDiv.className = 'invalid';
+        function startScanner() {
+            if (!scanner) {
+                scanner = new Html5Qrcode("reader");
             }
-        })
-        .catch((error) => {
-            console.error('❌ STEP 5 - Error:', error);
-            resultDiv.innerHTML = '❌ ERROR<br>Could not connect to server.';
-            resultDiv.className = 'invalid';
-        });
-    }
+            
+            const config = { 
+                fps: 10, 
+                qrbox: { width: 250, height: 250 }
+            };
 
-    // For manual entry fallback
-    function validateManual() {
-        const ticketId = document.getElementById('manualTicketId').value.trim();
-        if (!ticketId) {
-            alert('Enter a Ticket ID');
-            return;
+            scanner.start(
+                { facingMode: "environment" }, 
+                config, 
+                onScanSuccess, 
+                onScanError
+            ).then(() => {
+                isScanning = true;
+                console.log("Scanner started");
+            }).catch(err => {
+                console.log("Camera error:", err);
+                scanResult.innerHTML = '❌ Camera error. Use manual mode.';
+            });
         }
-        console.log('🔍 Manual entry:', ticketId);
-        validateTicket(ticketId);
-    }
 
-    // --- Scanner Configuration ---
-    const html5QrCode = new Html5Qrcode("reader");
+        function onScanSuccess(decodedText) {
+            console.log("Scanned:", decodedText);
+            
+            if (scanner && isScanning) {
+                scanner.pause();
+                isScanning = false;
+            }
+            
+            scanResult.innerHTML = '⏳ Validating...';
+            scanResult.className = 'result';
+            
+            validateTicket(decodedText, 'scan');
+        }
 
-    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        console.log('✅ QR Code scanned successfully!');
-        console.log('Decoded text:', decodedText);
-        console.log('Full result:', decodedResult);
-        
-        // Stop scanning once we get a result
-        html5QrCode.stop().then(() => {
-            console.log("🛑 Scanner stopped.");
-            validateTicket(decodedText);
-        }).catch(err => {
-            console.log("Error stopping scanner.", err);
-            validateTicket(decodedText);
+        function onScanError(error) {
+            // Ignore scanning errors
+        }
+
+        function stopScanner() {
+            if (scanner && isScanning) {
+                scanner.pause();
+                isScanning = false;
+            }
+        }
+
+        function restartScanner() {
+            if (scanner && !isScanning) {
+                scanner.resume();
+                isScanning = true;
+                scanResult.innerHTML = 'Ready to scan...';
+                scanResult.className = 'result';
+            } else if (!scanner) {
+                startScanner();
+            }
+        }
+
+        // ========== VALIDATION ==========
+        function validateTicket(input, source) {
+            const targetDiv = source === 'scan' ? scanResult : manualResult;
+            
+            let payload = {};
+            
+            if (input.length === 6 && /^[A-Z0-9]+$/.test(input.toUpperCase())) {
+                payload = { shortCode: input.toUpperCase() };
+            } else if (input.includes('@')) {
+                searchByEmail(input, targetDiv);
+                return;
+            } else {
+                payload = { qrData: input };
+            }
+
+            fetch('https://ftc-march-madness-backend-1.onrender.com/api/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const code = data.data.shortCode || data.data.ticketId.slice(-6);
+                    targetDiv.innerHTML = `
+                        ✅ VALID<br>
+                        <strong>${data.data.name}</strong><br>
+                        Code: ${code}
+                    `;
+                    targetDiv.className = 'result valid';
+                    
+                    addToRecent({
+                        code: code,
+                        name: data.data.name,
+                        status: 'valid'
+                    });
+                } else {
+                    targetDiv.innerHTML = `❌ INVALID<br>${data.message}`;
+                    targetDiv.className = 'result invalid';
+                    
+                    addToRecent({
+                        code: input.length > 8 ? input.slice(0,8)+'...' : input,
+                        name: 'Failed',
+                        status: 'invalid'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                targetDiv.innerHTML = '❌ ERROR<br>Could not connect';
+                targetDiv.className = 'result invalid';
+            });
+        }
+
+        function searchByEmail(email, targetDiv) {
+            fetch(`https://ftc-march-madness-backend-1.onrender.com/api/validate/email/${encodeURIComponent(email)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.count > 0) {
+                    let html = `✅ FOUND ${data.count} TICKET(S)<br>`;
+                    data.data.forEach(t => {
+                        html += `${t.shortCode}: ${t.name}<br>`;
+                    });
+                    targetDiv.innerHTML = html;
+                    targetDiv.className = 'result valid';
+                } else {
+                    targetDiv.innerHTML = '❌ No tickets found';
+                    targetDiv.className = 'result invalid';
+                }
+            })
+            .catch(error => {
+                targetDiv.innerHTML = '❌ Error searching email';
+                targetDiv.className = 'result invalid';
+            });
+        }
+
+        // ========== RECENT SCANS ==========
+        function addToRecent(scan) {
+            recentScans.unshift(scan);
+            if (recentScans.length > 10) {
+                recentScans.pop();
+            }
+            saveRecent();
+            updateRecentList();
+        }
+
+        function saveRecent() {
+            localStorage.setItem('recentScans', JSON.stringify(recentScans));
+        }
+
+        function loadRecent() {
+            const saved = localStorage.getItem('recentScans');
+            if (saved) {
+                recentScans = JSON.parse(saved);
+                updateRecentList();
+            }
+        }
+
+        function updateRecentList() {
+            if (recentScans.length === 0) {
+                recentList.innerHTML = '<div style="color: #DCC7B0; text-align: center;">No recent scans</div>';
+                return;
+            }
+            
+            let html = '';
+            recentScans.forEach(scan => {
+                const statusClass = scan.status === 'valid' ? 'valid-item' : 'invalid-item';
+                html += `
+                    <div class="recent-item ${statusClass}">
+                        <span>${scan.code}</span>
+                        <span>${scan.name}</span>
+                    </div>
+                `;
+            });
+            recentList.innerHTML = html;
+        }
+
+        function clearRecent() {
+            recentScans = [];
+            localStorage.removeItem('recentScans');
+            updateRecentList();
+        }
+
+        // ========== EVENT LISTENERS ==========
+        scanModeBtn.addEventListener('click', function() {
+            scanModeBtn.classList.add('active');
+            manualModeBtn.classList.remove('active');
+            scannerMode.style.display = 'block';
+            manualMode.style.display = 'none';
+            restartScanner();
         });
-    };
 
-    const config = { 
-        fps: 10, 
-        qrbox: { width: 250, height: 250 }
-    };
+        manualModeBtn.addEventListener('click', function() {
+            manualModeBtn.classList.add('active');
+            scanModeBtn.classList.remove('active');
+            manualMode.style.display = 'block';
+            scannerMode.style.display = 'none';
+            stopScanner();
+        });
 
-    // Start scanning when page loads
-    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
-    .catch(err => {
-        console.log("Unable to start scanner:", err);
-        document.getElementById('result').innerHTML = 'Camera error. Use manual entry.';
-    });
-</script>
+        rescanBtn.addEventListener('click', function() {
+            restartScanner();
+        });
+
+        switchToManualBtn.addEventListener('click', function() {
+            manualModeBtn.click();
+        });
+
+        verifyBtn.addEventListener('click', function() {
+            const input = manualInput.value.trim();
+            if (input) {
+                validateTicket(input, 'manual');
+            } else {
+                alert('Please enter a code');
+            }
+        });
+
+        clearBtn.addEventListener('click', function() {
+            manualInput.value = '';
+            manualResult.innerHTML = 'Enter a code to verify';
+            manualResult.className = 'result';
+        });
+
+        manualInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyBtn.click();
+            }
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (scanner && isScanning) {
+                scanner.stop().catch(e => {});
+            }
+        });
+    </script>
 </body>
 </html>

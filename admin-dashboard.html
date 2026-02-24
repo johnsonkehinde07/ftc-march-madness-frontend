@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTC · Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-red: #8B1E1E;
+            --secondary-gold: #C69C6D;
+            --dark-charcoal: #1A1212;
+            --off-white: #F5E6D3;
+            --sand: #DCC7B0;
+            --success-green: #2e7d32;
+            --warning-yellow: #ed6c02;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-charcoal);
+            color: var(--off-white);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--primary-red);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            border: 2px solid var(--secondary-gold);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--secondary-gold);
+        }
+
+        .admin-badge {
+            background: var(--primary-red);
+            color: white;
+            padding: 5px 15px;
+            border: 2px solid var(--secondary-gold);
+            font-weight: 700;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(26, 18, 18, 0.95);
+            border: 2px solid var(--primary-red);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--secondary-gold);
+        }
+
+        .stat-label {
+            color: var(--sand);
+            margin-top: 5px;
+        }
+
+        /* Ticket Management */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary-gold);
+            margin: 30px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .ticket-card {
+            background: rgba(26, 18, 18, 0.98);
+            border: 2px solid var(--primary-red);
+            padding: 20px;
+            position: relative;
+        }
+
+        .ticket-card.active {
+            border-color: var(--secondary-gold);
+            box-shadow: 0 0 15px rgba(198,156,109,0.3);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(198,156,109,0.3);
+        }
+
+        .ticket-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--secondary-gold);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .status-badge.active {
+            background: var(--success-green);
+            border-color: var(--secondary-gold);
+            color: white;
+        }
+
+        .status-badge.sold-out {
+            background: var(--primary-red);
+            border-color: var(--sand);
+            color: var(--sand);
+        }
+
+        .ticket-details {
+            margin: 15px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            color: var(--sand);
+        }
+
+        .detail-row strong {
+            color: var(--secondary-gold);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--primary-red);
+            color: var(--off-white);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary-red);
+            border: 2px solid var(--secondary-gold);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--secondary-gold);
+            color: var(--dark-charcoal);
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-success {
+            background: var(--success-green);
+        }
+
+        .btn-warning {
+            background: var(--warning-yellow);
+        }
+
+        /* Add New Ticket Form */
+        .add-ticket-form {
+            background: rgba(26, 18, 18, 0.98);
+            border: 3px solid var(--primary-red);
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            color: var(--secondary-gold);
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--primary-red);
+            color: var(--off-white);
+        }
+
+        /* Recent Activity */
+        .activity-log {
+            background: rgba(26, 18, 18, 0.95);
+            border: 2px solid var(--primary-red);
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .log-entry {
+            padding: 10px;
+            border-bottom: 1px solid rgba(198,156,109,0.2);
+            color: var(--sand);
+            font-size: 0.9rem;
+        }
+
+        .log-entry strong {
+            color: var(--secondary-gold);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-area">
+                <img src="pictures/logo.jpeg" alt="FTC" class="logo-img">
+                <span class="logo-text">ADMIN DASHBOARD</span>
+            </div>
+            <div class="admin-badge" id="loginStatus">
+                <i class="fas fa-lock"></i> LOGGED OUT
+            </div>
+        </div>
+
+        <!-- Login Section (shown when not logged in) -->
+        <div id="loginSection" class="add-ticket-form">
+            <h2 style="color: var(--secondary-gold); margin-bottom: 20px;">🔐 ADMIN LOGIN</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" value="admin@ftcmarch.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" value="ftc2026march">
+                </div>
+            </div>
+            <button class="btn" onclick="login()" style="width: 100%;">
+                <i class="fas fa-sign-in-alt"></i> LOGIN
+            </button>
+        </div>
+
+        <!-- Dashboard Content (hidden until login) -->
+        <div id="dashboardContent" class="hidden">
+            <!-- Stats Overview -->
+            <div class="stats-grid" id="statsContainer">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRevenue">₦0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTickets">0</div>
+                    <div class="stat-label">Tickets Sold</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalScanned">0</div>
+                    <div class="stat-label">Scanned In</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="activeTypes">0</div>
+                    <div class="stat-label">Active Types</div>
+                </div>
+            </div>
+
+            <!-- Ticket Management -->
+            <div class="section-title">
+                <i class="fas fa-ticket-alt"></i> MANAGE TICKET TYPES
+                <button class="btn btn-small" onclick="refreshTickets()" style="margin-left: auto;">
+                    <i class="fas fa-sync-alt"></i> REFRESH
+                </button>
+            </div>
+
+            <div class="ticket-grid" id="ticketGrid">
+                <!-- Tickets will be loaded here -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--sand);">
+                    <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    <p>Loading tickets...</p>
+                </div>
+            </div>
+
+            <!-- Add New Ticket Form -->
+            <div class="add-ticket-form">
+                <h2 style="color: var(--secondary-gold); margin-bottom: 20px;">➕ ADD NEW TICKET TYPE</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ticket Name</label>
+                        <input type="text" id="newName" placeholder="e.g., VIP, GOLD, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₦)</label>
+                        <input type="number" id="newPrice" placeholder="9000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Total Limit</label>
+                        <input type="number" id="newLimit" placeholder="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="newDescription" placeholder="Optional description">
+                    </div>
+                </div>
+                <button class="btn" onclick="addTicketType()" style="width: 100%;">
+                    <i class="fas fa-plus-circle"></i> ADD TICKET TYPE
+                </button>
+            </div>
+
+            <!-- Recent Activity Log -->
+            <div class="activity-log">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="color: var(--secondary-gold);">📋 RECENT ACTIVITY</h3>
+                    <button class="btn btn-small" onclick="clearLog()">CLEAR</button>
+                </div>
+                <div id="activityLog">
+                    <div class="log-entry">Welcome to admin dashboard</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== STATE ==========
+        let token = null;
+        let eventData = null;
+        let activityLog = JSON.parse(localStorage.getItem('adminLog') || '[]');
+
+        // ========== LOGIN FUNCTION ==========
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    token = data.token;
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('dashboardContent').classList.remove('hidden');
+                    document.getElementById('loginStatus').innerHTML = '<i class="fas fa-unlock"></i> ADMIN';
+                    
+                    logActivity('✅ Admin logged in');
+                    loadDashboard();
+                } else {
+                    alert('Login failed: ' + data.message);
+                }
+            } catch (error) {
+                alert('Login error: ' + error.message);
+            }
+        }
+
+        // ========== LOAD DASHBOARD ==========
+        async function loadDashboard() {
+            await loadStats();
+            await loadTickets();
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/admin/stats', {
+                    headers: { 'x-auth-token': token }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('totalRevenue').innerHTML = `₦${data.stats.sales.totalRevenue.toLocaleString()}`;
+                    document.getElementById('totalTickets').innerHTML = data.stats.tickets.total;
+                    document.getElementById('totalScanned').innerHTML = data.stats.tickets.scanned;
+                    document.getElementById('activeTypes').innerHTML = Object.keys(data.stats.tickets.byType).length;
+                }
+            } catch (error) {
+                console.error('Stats error:', error);
+            }
+        }
+
+        async function loadTickets() {
+            try {
+                const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/types');
+                const data = await response.json();
+
+                if (data.success) {
+                    displayTickets(data.data);
+                    eventData = data.data;
+                }
+            } catch (error) {
+                console.error('Ticket load error:', error);
+            }
+        }
+
+        function displayTickets(tickets) {
+            const grid = document.getElementById('ticketGrid');
+            grid.innerHTML = '';
+
+            tickets.forEach(ticket => {
+                const available = ticket.available;
+                const status = available > 0 ? 'active' : 'sold-out';
+                const statusText = available > 0 ? 'ACTIVE' : 'SOLD OUT';
+                
+                const card = document.createElement('div');
+                card.className = `ticket-card ${status === 'active' ? 'active' : ''}`;
+                card.innerHTML = `
+                    <div class="ticket-header">
+                        <span class="ticket-name">${ticket.name}</span>
+                        <span class="status-badge ${status}">${statusText}</span>
+                    </div>
+                    <div class="ticket-details">
+                        <div class="detail-row">
+                            <strong>Price:</strong> <span>₦${ticket.price.toLocaleString()} + ₦300 fee</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Available:</strong> <span>${available} of ${ticket.limit}</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Sold:</strong> <span>${ticket.sold}</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="limit-${ticket.name}" placeholder="New limit" value="${ticket.limit}">
+                        <button class="btn btn-small" onclick="updateLimit('${ticket.name}')">
+                            <i class="fas fa-save"></i> SET
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn btn-small btn-success" onclick="restockTicket('${ticket.name}')">
+                            <i class="fas fa-refresh"></i> RESTOCK
+                        </button>
+                        <button class="btn btn-small btn-warning" onclick="soldOut('${ticket.name}')">
+                            <i class="fas fa-ban"></i> SOLD OUT
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ========== TICKET ACTIONS ==========
+        async function updateLimit(ticketName) {
+            const newLimit = document.getElementById(`limit-${ticketName}`).value;
+            
+            try {
+                const response = await fetch(`https://ftc-march-madness-backend-1.onrender.com/api/admin/restock/${ticketName}`, {
+                    method: 'POST',
+                    headers: { 
+                        'x-auth-token': token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newLimit: parseInt(newLimit) })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    logActivity(`✅ Updated ${ticketName} limit to ${newLimit}`);
+                    loadTickets();
+                    loadStats();
+                }
+            } catch (error) {
+                alert('Update failed: ' + error.message);
+            }
+        }
+
+        async function restockTicket(ticketName) {
+            try {
+                const response = await fetch(`https://ftc-march-madness-backend-1.onrender.com/api/admin/restock/${ticketName}`, {
+                    method: 'POST',
+                    headers: { 
+                        'x-auth-token': token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    logActivity(`🔄 Restocked ${ticketName}`);
+                    loadTickets();
+                    loadStats();
+                }
+            } catch (error) {
+                alert('Restock failed: ' + error.message);
+            }
+        }
+
+        async function soldOut(ticketName) {
+            const currentTicket = eventData.find(t => t.name === ticketName);
+            if (!currentTicket) return;
+
+            try {
+                const response = await fetch(`https://ftc-march-madness-backend-1.onrender.com/api/admin/restock/${ticketName}`, {
+                    method: 'POST',
+                    headers: { 
+                        'x-auth-token': token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newLimit: currentTicket.sold })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    logActivity(`❌ Marked ${ticketName} as SOLD OUT`);
+                    loadTickets();
+                    loadStats();
+                }
+            } catch (error) {
+                alert('Sold out failed: ' + error.message);
+            }
+        }
+
+        async function addTicketType() {
+            const name = document.getElementById('newName').value;
+            const price = document.getElementById('newPrice').value;
+            const limit = document.getElementById('newLimit').value;
+            const desc = document.getElementById('newDescription').value;
+
+            if (!name || !price || !limit) {
+                alert('Please fill all required fields');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/ticket-types/add', {
+                    method: 'POST',
+                    headers: { 
+                        'x-auth-token': token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, price: parseInt(price), limit: parseInt(limit), description: desc })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    logActivity(`➕ Added new ticket type: ${name}`);
+                    document.getElementById('newName').value = '';
+                    document.getElementById('newPrice').value = '';
+                    document.getElementById('newLimit').value = '';
+                    document.getElementById('newDescription').value = '';
+                    loadTickets();
+                } else {
+                    alert('Add failed: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function refreshTickets() {
+            loadTickets();
+            loadStats();
+            logActivity('🔄 Dashboard refreshed');
+        }
+
+        // ========== ACTIVITY LOG ==========
+        function logActivity(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            activityLog.unshift(`[${timestamp}] ${message}`);
+            if (activityLog.length > 10) activityLog.pop();
+            localStorage.setItem('adminLog', JSON.stringify(activityLog));
+            displayLog();
+        }
+
+        function displayLog() {
+            const logDiv = document.getElementById('activityLog');
+            logDiv.innerHTML = activityLog.map(msg => `<div class="log-entry">${msg}</div>`).join('');
+        }
+
+        function clearLog() {
+            activityLog = [];
+            localStorage.removeItem('adminLog');
+            displayLog();
+        }
+
+        // Initial log display
+        displayLog();
+    </script>
+</body>
+</html>

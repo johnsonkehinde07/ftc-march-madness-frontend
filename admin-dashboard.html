@@ -219,6 +219,10 @@
             background: var(--warning-yellow);
         }
 
+        .btn-danger {
+            background: var(--primary-red);
+        }
+
         /* Add New Ticket Form */
         .add-ticket-form {
             background: rgba(26, 18, 18, 0.98);
@@ -466,11 +470,11 @@
 
             tickets.forEach(ticket => {
                 const available = ticket.available;
-                const status = available > 0 ? 'active' : 'sold-out';
-                const statusText = available > 0 ? 'ACTIVE' : 'SOLD OUT';
+                const status = ticket.isActive ? 'active' : 'sold-out';
+                const statusText = ticket.isActive ? 'ACTIVE' : 'SOLD OUT';
                 
                 const card = document.createElement('div');
-                card.className = `ticket-card ${status === 'active' ? 'active' : ''}`;
+                card.className = `ticket-card ${ticket.isActive ? 'active' : ''}`;
                 card.innerHTML = `
                     <div class="ticket-header">
                         <span class="ticket-name">${ticket.name}</span>
@@ -493,12 +497,15 @@
                             <i class="fas fa-save"></i> SET
                         </button>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
                         <button class="btn btn-small btn-success" onclick="restockTicket('${ticket.name}')">
                             <i class="fas fa-refresh"></i> RESTOCK
                         </button>
-                        <button class="btn btn-small btn-warning" onclick="soldOut('${ticket.name}')">
+                        <button class="btn btn-small btn-warning" onclick="soldOutTicket('${ticket.name}')">
                             <i class="fas fa-ban"></i> SOLD OUT
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="deleteTicket('${ticket.name}')">
+                            <i class="fas fa-trash"></i> DELETE
                         </button>
                     </div>
                 `;
@@ -553,33 +560,69 @@
             }
         }
 
-        async function soldOut(ticketName) {
-            const currentTicket = eventData.find(t => t.name === ticketName);
-            if (!currentTicket) return;
+        // NEW: FIXED SOLD OUT FUNCTION - Uses the dedicated endpoint
+        async function soldOutTicket(ticketName) {
+            if (!confirm(`Are you sure you want to mark ${ticketName} as SOLD OUT?`)) {
+                return;
+            }
 
             try {
-                const response = await fetch(`https://ftc-march-madness-backend-1.onrender.com/api/admin/restock/${ticketName}`, {
+                const response = await fetch(`https://ftc-march-madness-backend-1.onrender.com/api/ticket-types/soldout/${ticketName}`, {
                     method: 'POST',
                     headers: { 
                         'x-auth-token': token,
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ newLimit: currentTicket.sold })
+                    }
                 });
 
                 const data = await response.json();
+                
                 if (data.success) {
                     logActivity(`❌ Marked ${ticketName} as SOLD OUT`);
                     loadTickets();
                     loadStats();
+                    alert(`✅ ${ticketName} is now SOLD OUT`);
+                } else {
+                    alert('Failed to mark as sold out: ' + data.message);
                 }
             } catch (error) {
-                alert('Sold out failed: ' + error.message);
+                console.error('Sold out error:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function deleteTicket(ticketName) {
+            if (!confirm(`⚠️ Are you sure you want to DELETE ${ticketName}? This cannot be undone!`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://ftc-march-madness-backend-1.onrender.com/api/ticket-types/delete/${ticketName}`, {
+                    method: 'DELETE',
+                    headers: { 
+                        'x-auth-token': token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    logActivity(`🗑️ Deleted ticket type: ${ticketName}`);
+                    loadTickets();
+                    loadStats();
+                    alert(`✅ ${ticketName} deleted successfully`);
+                } else {
+                    alert('Delete failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Error: ' + error.message);
             }
         }
 
         async function addTicketType() {
-            const name = document.getElementById('newName').value;
+            const name = document.getElementById('newName').value.trim();
             const price = document.getElementById('newPrice').value;
             const limit = document.getElementById('newLimit').value;
             const desc = document.getElementById('newDescription').value;
@@ -596,10 +639,16 @@
                         'x-auth-token': token,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name, price: parseInt(price), limit: parseInt(limit), description: desc })
+                    body: JSON.stringify({ 
+                        name, 
+                        price: parseInt(price), 
+                        limit: parseInt(limit), 
+                        description: desc 
+                    })
                 });
 
                 const data = await response.json();
+                
                 if (data.success) {
                     logActivity(`➕ Added new ticket type: ${name}`);
                     document.getElementById('newName').value = '';

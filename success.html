@@ -7,6 +7,22 @@
   <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .short-code {
+      background: #333;
+      padding: 15px;
+      text-align: center;
+      border: 3px solid #C69C6D;
+      margin: 20px 0;
+    }
+    .short-code .code {
+      font-size: 48px;
+      font-weight: bold;
+      letter-spacing: 8px;
+      color: white;
+      font-family: monospace;
+    }
+  </style>
 </head>
 <body class="status-page">
 
@@ -56,16 +72,28 @@
         ticketHtml += `<p><strong>TOTAL TICKETS:</strong> ${ticketData.count}</p>`;
         if (ticketData.tickets) {
           ticketData.tickets.forEach(t => {
-            ticketHtml += `<p><strong>TICKET ID:</strong> ${t.ticketId}</p>`;
-            ticketHtml += `<p><strong>NAME:</strong> ${t.name}</p>`;
-            ticketHtml += `<p><strong>TYPE:</strong> ${t.ticketType || 'RUNNER UP'}</p>`;
-            ticketHtml += `<hr style="border-color: #8B1E1E; opacity: 0.3;">`;
+            const shortCode = t.shortCode || t.ticketId.slice(-6);
+            ticketHtml += `
+              <div class="short-code">
+                <p style="color: #C69C6D;">SHORT CODE</p>
+                <p class="code">${shortCode}</p>
+              </div>
+              <p><strong>TICKET ID:</strong> ${t.ticketId}</p>
+              <p><strong>NAME:</strong> ${t.name}</p>
+              <p><strong>TYPE:</strong> ${t.ticketType || 'RUNNER UP'}</p>
+              <hr style="border-color: #8B1E1E; opacity: 0.3;">
+            `;
           });
         }
       } else {
         // Single ticket
         const ticket = ticketData.tickets ? ticketData.tickets[0] : ticketData;
+        const shortCode = ticket.shortCode || ticket.ticketId.slice(-6);
         ticketHtml += `
+          <div class="short-code">
+            <p style="color: #C69C6D;">ENTRY CODE</p>
+            <p class="code">${shortCode}</p>
+          </div>
           <p><strong>TICKET ID:</strong> ${ticket.ticketId}</p>
           <p><strong>NAME:</strong> ${ticket.name}</p>
           <p><strong>EMAIL:</strong> ${ticket.email}</p>
@@ -77,6 +105,7 @@
       ticketHtml += `</div>
         <p style="color: #C69C6D; margin-bottom: 30px;">⭐ QR CODE HAS BEEN SENT TO YOUR EMAIL ⭐</p>
         <p style="color: #F5E6D3; font-size: 0.9rem;">Check your inbox (and spam folder) for your QR code ticket.</p>
+        <p style="color: #F5E6D3; font-size: 0.9rem;">Use the ENTRY CODE above if QR doesn't scan at the gate.</p>
       `;
       
       document.getElementById('ticketDetails').innerHTML = ticketHtml;
@@ -85,6 +114,7 @@
       document.getElementById('ticketDetails').innerHTML = `
         <p style="margin: 20px 0;">Check your email for ticket details and QR code</p>
         <p style="color: #F5E6D3; font-size: 0.9rem;">If you don't see it within 5 minutes, check your spam folder.</p>
+        <p style="color: #F5E6D3; font-size: 0.9rem;">Contact support@ftcmarch.com if you need assistance.</p>
       `;
     }
   </script>

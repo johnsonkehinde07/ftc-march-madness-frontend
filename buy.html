@@ -1,648 +1,810 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>FTC · BUY TICKETS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* ===== RESET & BASE ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>FTC Ticketing · Checkout</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    :root {
-      --primary-red: #8B1E1E;
-      --secondary-gold: #C69C6D;
-      --dark-charcoal: #1A1212;
-      --off-white: #F5E6D3;
-      --accent-burgundy: #5C1A1A;
-      --metal: #2A2A2A;
-      --sand: #DCC7B0;
-      --glimmer: #E6B17E;
-      --sold-out: #4a4a4a;
-      --sold-out-text: #888;
-    }
+        :root {
+            --primary: #0A0A0A;
+            --primary-light: #1A1A1A;
+            --accent: #C62828;
+            --accent-light: #EF5350;
+            --accent-glow: rgba(198, 40, 40, 0.4);
+            --gold: #D4AF37;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --text-muted: #6B6B6B;
+            --border: #2A2A2A;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --gradient-accent: linear-gradient(135deg, #C62828 0%, #8B0000 100%);
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.4);
+            --shadow-accent: 0 0 30px rgba(198, 40, 40, 0.3);
+        }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--dark-charcoal);
-      color: var(--off-white);
-      line-height: 1.5;
-      min-height: 100vh;
-      padding: 0;
-      margin: 0;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
 
-    /* ===== HEADER ===== */
-    .logo-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      background: rgba(26, 18, 18, 0.98);
-      border-bottom: 3px solid var(--primary-red);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--primary-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
 
-    .logo-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .logo-img {
-      height: 48px;
-      width: auto;
-      border-radius: 4px;
-      border: 2px solid var(--secondary-gold);
-    }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-    .logo-text-wrapper {
-      display: flex;
-      flex-direction: column;
-    }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
 
-    .logo-ftc {
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: var(--secondary-gold);
-      letter-spacing: 2px;
-    }
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 5%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
 
-    .logo-event {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--off-white);
-    }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .back-link {
-      color: var(--secondary-gold);
-      text-decoration: none;
-      font-size: 0.9rem;
-      border: 1px solid var(--primary-red);
-      padding: 6px 12px;
-    }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
 
-    /* ===== MAIN CONTAINER ===== */
-    .tickets-container {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px 16px 30px;
-    }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: white;
+        }
 
-    .page-title {
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-      color: var(--secondary-gold);
-    }
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+        }
 
-    .event-date {
-      font-size: 0.95rem;
-      color: var(--sand);
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(198,156,109,0.3);
-    }
+        .logo-text span {
+            color: var(--accent);
+        }
 
-    /* ===== TICKET CARDS ===== */
-    .ticket-card {
-      background: rgba(26, 18, 18, 0.95);
-      border: 2px solid var(--primary-red);
-      border-radius: 0;
-      margin-bottom: 16px;
-      padding: 16px;
-      transition: all 0.2s ease;
-    }
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
 
-    .ticket-card.available {
-      border-color: var(--secondary-gold);
-      box-shadow: 0 4px 12px rgba(198,156,109,0.2);
-    }
+        .back-link:hover {
+            color: var(--accent);
+        }
 
-    .ticket-card.sold-out {
-      border-color: var(--sold-out);
-      opacity: 0.7;
-      background: rgba(40, 40, 40, 0.8);
-    }
+        /* Main Container */
+        .checkout-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 5%;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 40px;
+        }
 
-    .ticket-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+        /* Ticket Selection */
+        .ticket-section {
+            animation: fadeInUp 0.6s ease;
+        }
 
-    .ticket-name {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--secondary-gold);
-    }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
 
-    .ticket-badge {
-      background: var(--primary-red);
-      color: var(--off-white);
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      border: 1px solid var(--secondary-gold);
-    }
+        .section-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 1rem;
+        }
 
-    .ticket-badge.sold-out {
-      background: var(--sold-out);
-      border-color: var(--sold-out-text);
-      color: #ccc;
-    }
+        .ticket-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-    .ticket-price-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px dashed rgba(198,156,109,0.3);
-    }
+        .ticket-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .ticket-price {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: var(--off-white);
-    }
+        .ticket-card:hover {
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
 
-    .ticket-price small {
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: var(--sand);
-    }
+        .ticket-card.selected {
+            border-color: var(--accent);
+            background: rgba(198, 40, 40, 0.05);
+            box-shadow: var(--shadow-accent);
+        }
 
-    .ticket-fee {
-      font-size: 0.85rem;
-      color: var(--sand);
-    }
+        .ticket-card.sold-out {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-    .ticket-description {
-      font-size: 0.9rem;
-      color: var(--sand);
-      margin-bottom: 16px;
-      line-height: 1.4;
-    }
+        .ticket-card.sold-out:hover {
+            transform: none;
+        }
 
-    .ticket-stats {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      font-size: 0.9rem;
-    }
+        .sold-out-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
 
-    .tickets-left {
-      background: rgba(139,30,30,0.3);
-      padding: 6px 12px;
-      border-left: 3px solid var(--secondary-gold);
-    }
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
 
-    .tickets-left strong {
-      color: var(--secondary-gold);
-      font-size: 1.2rem;
-      margin-right: 4px;
-    }
+        .ticket-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
 
-    .btn-buy {
-      width: 100%;
-      background: var(--primary-red);
-      border: 2px solid var(--secondary-gold);
-      color: white;
-      padding: 16px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
+        .ticket-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
 
-    .btn-buy:active {
-      transform: scale(0.98);
-      background: var(--secondary-gold);
-      color: var(--dark-charcoal);
-    }
+        .ticket-price small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
 
-    .btn-buy.sold-out-btn {
-      background: var(--sold-out);
-      border-color: var(--sold-out-text);
-      color: #ccc;
-      cursor: not-allowed;
-    }
+        .ticket-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
 
-    .btn-buy.sold-out-btn:active {
-      transform: none;
-    }
+        .ticket-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    /* ===== QUANTITY SELECTOR (for available tickets) ===== */
-    .quantity-selector {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin: 16px 0;
-    }
+        .ticket-availability {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
 
-    .qty-btn {
-      width: 44px;
-      height: 44px;
-      background: var(--primary-red);
-      border: 2px solid var(--secondary-gold);
-      color: white;
-      font-size: 1.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .ticket-availability strong {
+            color: var(--accent);
+        }
 
-    .qty-input {
-      width: 60px;
-      height: 44px;
-      text-align: center;
-      background: rgba(0,0,0,0.5);
-      border: 2px solid var(--primary-red);
-      color: white;
-      font-size: 1.3rem;
-      font-weight: 700;
-    }
+        .select-btn {
+            padding: 8px 24px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-    /* ===== PAST TICKETS SECTION ===== */
-    .past-tickets-section {
-      margin-top: 30px;
-    }
+        .select-btn:hover {
+            border-color: var(--accent);
+            background: rgba(198, 40, 40, 0.1);
+        }
 
-    .section-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--sand);
-      margin-bottom: 16px;
-      letter-spacing: 1px;
-    }
+        /* Customer Form */
+        .form-section {
+            animation: fadeInUp 0.6s ease 0.2s backwards;
+        }
 
-    .past-ticket-card {
-      background: rgba(20, 20, 20, 0.8);
-      border: 1px solid var(--metal);
-      padding: 14px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      opacity: 0.6;
-    }
+        .order-summary {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: sticky;
+            top: 100px;
+        }
 
-    .past-ticket-name {
-      font-weight: 600;
-      color: var(--sand);
-    }
+        .summary-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
 
-    .past-ticket-price {
-      color: var(--sand);
-      text-decoration: line-through;
-    }
+        .selected-ticket {
+            background: rgba(198, 40, 40, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
 
-    .past-ticket-badge {
-      background: var(--metal);
-      color: #aaa;
-      padding: 4px 8px;
-      font-size: 0.7rem;
-    }
+        .selected-ticket-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
 
-    /* ===== CUSTOMER FORM ===== */
-    .customer-form {
-      margin-top: 30px;
-      background: rgba(26, 18, 18, 0.98);
-      border: 3px solid var(--primary-red);
-      padding: 24px 16px;
-    }
+        .selected-ticket-price {
+            color: var(--accent);
+            font-weight: 700;
+        }
 
-    .form-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: var(--secondary-gold);
-      text-align: center;
-    }
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 16px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
 
-    input {
-      width: 100%;
-      padding: 16px;
-      margin-bottom: 16px;
-      background: rgba(0,0,0,0.5);
-      border: 2px solid var(--primary-red);
-      color: var(--off-white);
-      font-size: 1rem;
-    }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-    input:focus {
-      outline: none;
-      border-color: var(--secondary-gold);
-    }
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-    .form-notice {
-      background: rgba(139,30,30,0.2);
-      border: 1px solid var(--primary-red);
-      padding: 12px;
-      margin: 20px 0;
-      text-align: center;
-      color: var(--sand);
-      font-size: 0.9rem;
-    }
+        .qty-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
 
-    .submit-btn {
-      width: 100%;
-      background: var(--primary-red);
-      border: 2px solid var(--secondary-gold);
-      color: white;
-      padding: 18px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
+        .qty-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
 
-    .footer {
-      text-align: center;
-      padding: 24px 16px;
-      font-size: 0.8rem;
-      color: var(--sand);
-      border-top: 1px solid rgba(198,156,109,0.2);
-      margin-top: 20px;
-    }
+        .input-group {
+            margin-bottom: 20px;
+        }
 
-    .social-links a {
-      color: var(--secondary-gold);
-      margin: 0 10px;
-      font-size: 1.2rem;
-    }
-  </style>
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--primary-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            margin: 16px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .total-label {
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .fee-note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-accent);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secure-badge {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .secure-badge i {
+            color: var(--accent);
+            margin-right: 5px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .ticket-price {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <header class="logo-header">
-    <div class="logo-group">
-      <img src="pictures/logo.jpeg" alt="FTC" class="logo-img">
-      <div class="logo-text-wrapper">
-        <span class="logo-ftc">FTC</span>
-        <span class="logo-event">MARCH MADNESS</span>
-      </div>
-    </div>
-    <a href="index.html" class="back-link">
-      <i class="fas fa-arrow-left"></i> BACK
-    </a>
-  </header>
-
-  <div class="tickets-container">
-    <h1 class="page-title">BUY TICKETS</h1>
-    <div class="event-date">MARCH 7, 2026 · KODO BEACH HOUSE</div>
-
-    <!-- Ticket Cards will be injected here by JavaScript -->
-    <div id="ticketsList"></div>
-
-    <!-- Customer Form -->
-    <div class="customer-form" id="customerForm" style="display: none;">
-      <div class="form-title" id="selectedTicketName">COMPLETE PURCHASE</div>
-      
-      <form id="ticketForm">
-        <input type="hidden" id="selectedTicketType">
-        <input type="hidden" id="selectedTicketPrice">
-        
-        <input type="text" id="name" placeholder="FULL NAME" required>
-        <input type="email" id="email" placeholder="EMAIL ADDRESS" required>
-        <input type="tel" id="phone" placeholder="PHONE NUMBER (OPTIONAL)">
-        
-        <div class="quantity-selector">
-          <button type="button" class="qty-btn" id="decreaseQty">−</button>
-          <input type="number" id="quantity" value="1" min="1" max="10" readonly class="qty-input">
-          <button type="button" class="qty-btn" id="increaseQty">+</button>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">F</div>
+                <div class="logo-text">FTC<span>.</span></div>
+            </a>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
         </div>
-        
-        <div class="form-notice" id="totalDisplay">
-          Total: ₦0
+    </nav>
+
+    <!-- Main Content -->
+    <div class="checkout-container">
+        <!-- Left: Ticket Selection -->
+        <div class="ticket-section">
+            <h1 class="section-title">Select your ticket</h1>
+            <p class="section-subtitle">Choose from available ticket types below</p>
+
+            <div class="ticket-cards" id="ticketList">
+                <div style="text-align: center; padding: 50px;">
+                    <div class="spinner" style="margin: 0 auto 15px;"></div>
+                    <p>Loading tickets...</p>
+                </div>
+            </div>
         </div>
-        
-        <button type="submit" class="submit-btn" id="submitBtn">
-          PROCEED TO PAYMENT
-        </button>
-      </form>
+
+        <!-- Right: Order Summary & Form -->
+        <div class="form-section">
+            <div class="order-summary">
+                <div class="summary-title">Order Summary</div>
+
+                <div id="selectedTicketDisplay">
+                    <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                        <i class="fas fa-ticket-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        Select a ticket to continue
+                    </div>
+                </div>
+
+                <div id="customerForm" style="display: none;">
+                    <div class="selected-ticket">
+                        <div class="selected-ticket-name" id="selectedName">-</div>
+                        <div class="selected-ticket-price" id="selectedPrice">-</div>
+                    </div>
+
+                    <div class="quantity-selector">
+                        <span>Quantity</span>
+                        <div class="qty-controls">
+                            <button class="qty-btn" id="decreaseQty">−</button>
+                            <span class="qty-value" id="qtyValue">1</span>
+                            <button class="qty-btn" id="increaseQty">+</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" placeholder="you@example.com">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Phone Number (Optional)</label>
+                        <input type="tel" id="phone" placeholder="+234 123 456 7890">
+                    </div>
+
+                    <div class="total-row">
+                        <span class="total-label">Total</span>
+                        <span class="total-amount" id="totalAmount">₦0</span>
+                    </div>
+
+                    <div class="fee-note">
+                        <i class="fas fa-info-circle"></i> ₦300 processing fee included
+                    </div>
+
+                    <button class="submit-btn" id="submitBtn">
+                        <i class="fas fa-lock"></i> Proceed to Payment
+                    </button>
+
+                    <div class="secure-badge">
+                        <i class="fas fa-shield-alt"></i> Secured by Paystack
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <footer class="footer">
-    <div class="social-links">
-      <a href="https://www.instagram.com/freedomtocreate_"><i class="fab fa-instagram"></i></a>
-    </div>
-    <p>FTC · MARCH MADNESS · support@ftcmarch.com</p>
-    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(198,156,109,0.3); text-align: center; font-size: 0.8rem;">
-    <p style="color: var(--sand);">
-        Website designed & developed by 
-        <a href="https://johnson-ayodeji.vercel.app" 
-           target="_blank" 
-           rel="noopener noreferrer"
-           style="color: var(--secondary-gold); text-decoration: none; font-weight: 700; border-bottom: 1px solid var(--primary-red);">
-            Johnson Ayodeji
-        </a>
-    </p>
-</div>
-  </footer>
+    <script>
+        // State
+        let tickets = [];
+        let selectedTicket = null;
+        let quantity = 1;
+        let submitting = false;
 
-  <script>
-    // ========== FETCH TICKET TYPES ==========
-    const ticketsList = document.getElementById('ticketsList');
-    const customerForm = document.getElementById('customerForm');
-    const selectedTicketName = document.getElementById('selectedTicketName');
-    const selectedTicketType = document.getElementById('selectedTicketType');
-    const selectedTicketPrice = document.getElementById('selectedTicketPrice');
-    const quantityInput = document.getElementById('quantity');
-    const decreaseBtn = document.getElementById('decreaseQty');
-    const increaseBtn = document.getElementById('increaseQty');
-    const totalDisplay = document.getElementById('totalDisplay');
-    const submitBtn = document.getElementById('submitBtn');
+        // DOM Elements
+        const ticketList = document.getElementById('ticketList');
+        const selectedTicketDisplay = document.getElementById('selectedTicketDisplay');
+        const customerForm = document.getElementById('customerForm');
+        const selectedName = document.getElementById('selectedName');
+        const selectedPrice = document.getElementById('selectedPrice');
+        const qtyValue = document.getElementById('qtyValue');
+        const totalAmount = document.getElementById('totalAmount');
+        const submitBtn = document.getElementById('submitBtn');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
 
-    let currentTicket = null;
-    let allTicketTypes = [];
+        // Fetch tickets
+        async function loadTickets() {
+            try {
+                const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/types');
+                const data = await response.json();
 
-    // Sample past tickets (these would ideally come from your backend)
-    const pastTickets = [
-      { name: 'FAST FAST', price: 7000, status: 'sold-out' },
-      { name: 'WINNERS FC', price: 8000, status: 'sold-out' }
-    ];
-
-    function renderTickets(types) {
-      let html = '';
-      
-      // Active tickets
-      types.forEach(ticket => {
-        const available = ticket.available || 0;
-        const isAvailable = available > 0;
-        
-        html += `
-          <div class="ticket-card ${isAvailable ? 'available' : 'sold-out'}" data-ticket='${JSON.stringify(ticket)}'>
-            <div class="ticket-header">
-              <span class="ticket-name">${ticket.name}</span>
-              <span class="ticket-badge ${!isAvailable ? 'sold-out' : ''}">${isAvailable ? 'AVAILABLE' : 'SOLD OUT'}</span>
-            </div>
-            <div class="ticket-price-row">
-              <span class="ticket-price">₦${ticket.price.toLocaleString()} <small>+ ₦300 fee</small></span>
-              <span class="ticket-fee">Total: ₦${(ticket.price + 300).toLocaleString()}</span>
-            </div>
-            <div class="ticket-description">${ticket.description || 'Standard entry ticket'}</div>
-            <div class="ticket-stats">
-              <span class="tickets-left"><strong>${available}</strong> left of ${ticket.limit}</span>
-              ${isAvailable ? 
-                `<button class="btn-buy" onclick="selectTicket('${ticket.name}', ${ticket.price}, ${available})">BUY NOW</button>` : 
-                `<button class="btn-buy sold-out-btn" disabled>SOLD OUT</button>`}
-            </div>
-          </div>
-        `;
-      });
-
-      // Past tickets section
-      if (pastTickets.length > 0) {
-        html += `<div class="past-tickets-section"><div class="section-title">PAST TICKETS</div>`;
-        pastTickets.forEach(ticket => {
-          html += `
-            <div class="past-ticket-card">
-              <span class="past-ticket-name">${ticket.name}</span>
-              <span class="past-ticket-price">₦${ticket.price}</span>
-              <span class="past-ticket-badge">SOLD OUT</span>
-            </div>
-          `;
-        });
-        html += `</div>`;
-      }
-
-      ticketsList.innerHTML = html;
-    }
-
-    // Global function to handle ticket selection
-    window.selectTicket = function(name, price, available) {
-      currentTicket = { name, price, available };
-      selectedTicketName.innerText = `BUYING: ${name}`;
-      selectedTicketType.value = name;
-      selectedTicketPrice.value = price;
-      quantityInput.value = 1;
-      quantityInput.max = Math.min(available, 10);
-      updateTotal();
-      customerForm.style.display = 'block';
-      window.scrollTo({ top: customerForm.offsetTop - 100, behavior: 'smooth' });
-    };
-
-    function updateTotal() {
-      if (!currentTicket) return;
-      const qty = parseInt(quantityInput.value) || 1;
-      const total = (currentTicket.price * qty) + 300;
-      totalDisplay.innerHTML = `Total: ₦${total.toLocaleString()} for ${qty} ticket(s)`;
-    }
-
-    // Quantity buttons
-    decreaseBtn.addEventListener('click', () => {
-      let val = parseInt(quantityInput.value);
-      if (val > 1) {
-        quantityInput.value = val - 1;
-        updateTotal();
-      }
-    });
-
-    increaseBtn.addEventListener('click', () => {
-      let val = parseInt(quantityInput.value);
-      if (currentTicket && val < currentTicket.available && val < 10) {
-        quantityInput.value = val + 1;
-        updateTotal();
-      } else if (currentTicket && val >= currentTicket.available) {
-        alert(`Only ${currentTicket.available} tickets available`);
-      }
-    });
-
-    // Fetch real ticket types from backend
-    fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/types')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          allTicketTypes = data.data;
-          renderTickets(allTicketTypes);
-        } else {
-          // Fallback demo data
-          renderTickets([
-            { name: 'RUNNER UP', price: 8700, available: 50, limit: 50, description: 'Main event ticket' }
-          ]);
+                if (data.success && data.data.length > 0) {
+                    tickets = data.data;
+                    renderTickets();
+                } else {
+                    ticketList.innerHTML = `
+                        <div style="text-align: center; padding: 50px; color: var(--text-muted);">
+                            <i class="fas fa-ban" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            <p>No tickets available at the moment</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading tickets:', error);
+                ticketList.innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: var(--text-muted);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        <p>Error loading tickets. Please refresh the page.</p>
+                    </div>
+                `;
+            }
         }
-      })
-      .catch(err => {
-        console.error('Error loading tickets:', err);
-        // Fallback demo data
-        renderTickets([
-          { name: 'RUNNER UP', price: 8700, available: 50, limit: 50, description: 'Main event ticket' }
-        ]);
-      });
 
-    // Form submission
-    document.getElementById('ticketForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const ticketType = selectedTicketType.value;
-      const quantity = parseInt(quantityInput.value);
+        function renderTickets() {
+            ticketList.innerHTML = tickets.map(ticket => `
+                <div class="ticket-card ${ticket.available === 0 ? 'sold-out' : ''}" data-ticket='${JSON.stringify(ticket)}'>
+                    ${ticket.available === 0 ? '<div class="sold-out-badge">SOLD OUT</div>' : ''}
+                    <div class="ticket-header">
+                        <div class="ticket-name">${ticket.name}</div>
+                        <div class="ticket-price">₦${ticket.price.toLocaleString()}<small> + fee</small></div>
+                    </div>
+                    <div class="ticket-desc">${ticket.description || 'Standard entry ticket'}</div>
+                    <div class="ticket-footer">
+                        <div class="ticket-availability">
+                            <strong>${ticket.available}</strong> tickets left
+                        </div>
+                        ${ticket.available > 0 ? 
+                            `<button class="select-btn" onclick="selectTicket('${ticket.name}')">Select Ticket</button>` : 
+                            `<button class="select-btn" style="opacity:0.5;" disabled>Sold Out</button>`
+                        }
+                    </div>
+                </div>
+            `).join('');
+        }
 
-      if (!name || !email || !ticketType) {
-        alert('Please fill in all required fields');
-        return;
-      }
+        // Select ticket (global for onclick)
+        window.selectTicket = function(ticketName) {
+            const ticket = tickets.find(t => t.name === ticketName);
+            if (!ticket || ticket.available === 0) return;
 
-      if (!email.includes('@') || !email.includes('.')) {
-        alert('Please enter a valid email address');
-        return;
-      }
+            selectedTicket = ticket;
+            quantity = 1;
+            updateSelectedDisplay();
+            
+            customerForm.style.display = 'block';
+            selectedTicketDisplay.innerHTML = '';
+            
+            // Scroll to form
+            customerForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
 
-      submitBtn.innerHTML = 'PROCESSING...';
-      submitBtn.disabled = true;
+        function updateSelectedDisplay() {
+            if (!selectedTicket) return;
+            
+            const price = selectedTicket.price;
+            const total = (price * quantity) + 300;
+            
+            selectedName.textContent = `${selectedTicket.name} x${quantity}`;
+            selectedPrice.textContent = `₦${price.toLocaleString()} each`;
+            qtyValue.textContent = quantity;
+            totalAmount.textContent = `₦${total.toLocaleString()}`;
+        }
 
-      try {
-        const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/purchase', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, phone, ticketType, quantity })
+        // Quantity controls
+        document.getElementById('decreaseQty').addEventListener('click', () => {
+            if (quantity > 1) {
+                quantity--;
+                updateSelectedDisplay();
+            }
         });
 
-        const data = await response.json();
+        document.getElementById('increaseQty').addEventListener('click', () => {
+            if (selectedTicket && quantity < selectedTicket.available && quantity < 10) {
+                quantity++;
+                updateSelectedDisplay();
+            } else if (selectedTicket && quantity >= selectedTicket.available) {
+                alert(`Only ${selectedTicket.available} tickets available`);
+            }
+        });
 
-        if (data.success) {
-          sessionStorage.setItem('pendingTicket', JSON.stringify({
-            bulkOrderId: data.data.bulkOrderId,
-            quantity,
-            name,
-            email,
-            ticketType
-          }));
-          window.location.href = data.data.authorization_url;
-        } else {
-          alert('Error: ' + data.message);
-          submitBtn.innerHTML = 'PROCEED TO PAYMENT';
-          submitBtn.disabled = false;
-        }
-      } catch (error) {
-        alert('Network error. Please try again.');
-        submitBtn.innerHTML = 'PROCEED TO PAYMENT';
-        submitBtn.disabled = false;
-      }
-    });
-  </script>
+        // Form submission
+        submitBtn.addEventListener('click', async () => {
+            if (submitting) return;
+            
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            const phone = phoneInput.value.trim();
+
+            if (!name) {
+                alert('Please enter your full name');
+                return;
+            }
+
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            if (!selectedTicket) {
+                alert('Please select a ticket type');
+                return;
+            }
+
+            submitting = true;
+            submitBtn.innerHTML = '<div class="spinner"></div> Processing...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/purchase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        phone,
+                        ticketType: selectedTicket.name,
+                        quantity
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    sessionStorage.setItem('pendingTicket', JSON.stringify({
+                        bulkOrderId: data.data.bulkOrderId,
+                        quantity,
+                        name,
+                        email,
+                        ticketType: selectedTicket.name
+                    }));
+                    window.location.href = data.data.authorization_url;
+                } else {
+                    alert('Error: ' + data.message);
+                    submitting = false;
+                    submitBtn.innerHTML = '<i class="fas fa-lock"></i> Proceed to Payment';
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+                submitting = false;
+                submitBtn.innerHTML = '<i class="fas fa-lock"></i> Proceed to Payment';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Check payment return
+        (function checkPaymentReturn() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const reference = urlParams.get('reference') || urlParams.get('trxref');
+            
+            if (!reference) return;
+            
+            document.body.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--primary);">
+                    <div style="text-align: center;">
+                        <div class="spinner" style="width: 50px; height: 50px; margin: 0 auto 20px;"></div>
+                        <h2>Verifying your payment...</h2>
+                        <p style="color: var(--text-muted); margin-top: 10px;">Please wait, this may take a few seconds</p>
+                    </div>
+                </div>
+            `;
+            
+            fetch('https://ftc-march-madness-backend-1.onrender.com/api/tickets/verify-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reference })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    sessionStorage.setItem('ticketData', JSON.stringify(data.data));
+                    window.location.href = 'success.html';
+                } else {
+                    const pending = sessionStorage.getItem('pendingTicket');
+                    if (pending) {
+                        sessionStorage.setItem('ticketData', pending);
+                        window.location.href = 'success.html';
+                    } else {
+                        window.location.href = 'fail.html';
+                    }
+                }
+            })
+            .catch(() => {
+                const pending = sessionStorage.getItem('pendingTicket');
+                if (pending) {
+                    sessionStorage.setItem('ticketData', pending);
+                    window.location.href = 'success.html';
+                } else {
+                    window.location.href = 'fail.html';
+                }
+            });
+        })();
+
+        // Load tickets on page load
+        loadTickets();
+    </script>
 </body>
 </html>
+```
+

@@ -1,122 +1,600 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FTC · TICKET CONFIRMED</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    .short-code {
-      background: #333;
-      padding: 15px;
-      text-align: center;
-      border: 3px solid #C69C6D;
-      margin: 20px 0;
-    }
-    .short-code .code {
-      font-size: 48px;
-      font-weight: bold;
-      letter-spacing: 8px;
-      color: white;
-      font-family: monospace;
-    }
-  </style>
-</head>
-<body class="status-page">
-
-  <header class="logo-header">
-    <div class="logo-group">
-      <img src="pictures/logo.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
-      <div class="logo-text-wrapper">
-        <span class="logo-ftc">FTC</span>
-        <span class="logo-presents">presents</span>
-        <span class="logo-event">MARCH MADNESS</span>
-      </div>
-    </div>
-  </header>
-
-  <div class="status-screen success" id="ticketInfo">
-    <div class="status-icon">
-      👑
-    </div>
-    <h1>TICKET<br>CONFIRMED</h1>
-    <div class="status-message" id="ticketMessage">
-      LOADING TICKET DETAILS...
-    </div>
-    <hr>
-    <div class="ticket-details" id="ticketDetails">
-      <!-- Ticket details will be inserted here -->
-    </div>
-    <a href="index.html" class="btn status-btn">
-      <i class="fas fa-home"></i> RETURN HOME
-    </a>
-  </div>
-
-  <footer>
-    <p>FTC · MARCH MADNESS · MARCH 7TH 2026 · KODO BEACH HOUSE</p>
-  </footer>
-
-  <script>
-    // Get ticket data from session storage
-    const ticketData = JSON.parse(sessionStorage.getItem('ticketData'));
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Payment Success · FTC Ticketing</title>
     
-    if (ticketData) {
-      document.getElementById('ticketMessage').innerHTML = 'YOUR TICKET IS CONFIRMED';
-      
-      let ticketHtml = '<div style="background: rgba(139,30,30,0.2); border: 2px solid #8B1E1E; padding: 20px; margin: 20px 0; text-align: left;">';
-      
-      // Check if it's multiple tickets
-      if (ticketData.count && ticketData.count > 1) {
-        ticketHtml += `<p><strong>TOTAL TICKETS:</strong> ${ticketData.count}</p>`;
-        if (ticketData.tickets) {
-          ticketData.tickets.forEach(t => {
-            const shortCode = t.shortCode || t.ticketId.slice(-6);
-            ticketHtml += `
-              <div class="short-code">
-                <p style="color: #C69C6D;">SHORT CODE</p>
-                <p class="code">${shortCode}</p>
-              </div>
-              <p><strong>TICKET ID:</strong> ${t.ticketId}</p>
-              <p><strong>NAME:</strong> ${t.name}</p>
-              <p><strong>TYPE:</strong> ${t.ticketType || 'RUNNER UP'}</p>
-              <hr style="border-color: #8B1E1E; opacity: 0.3;">
-            `;
-          });
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      } else {
-        // Single ticket
-        const ticket = ticketData.tickets ? ticketData.tickets[0] : ticketData;
-        const shortCode = ticket.shortCode || ticket.ticketId.slice(-6);
-        ticketHtml += `
-          <div class="short-code">
-            <p style="color: #C69C6D;">ENTRY CODE</p>
-            <p class="code">${shortCode}</p>
-          </div>
-          <p><strong>TICKET ID:</strong> ${ticket.ticketId}</p>
-          <p><strong>NAME:</strong> ${ticket.name}</p>
-          <p><strong>EMAIL:</strong> ${ticket.email}</p>
-          <p><strong>TICKET TYPE:</strong> ${ticket.ticketType || 'RUNNER UP'}</p>
-          <p><strong>PRICE:</strong> ₦${ticket.price || 8700}</p>
-        `;
-      }
-      
-      ticketHtml += `</div>
-        <p style="color: #C69C6D; margin-bottom: 30px;">⭐ QR CODE HAS BEEN SENT TO YOUR EMAIL ⭐</p>
-        <p style="color: #F5E6D3; font-size: 0.9rem;">Check your inbox (and spam folder) for your QR code ticket.</p>
-        <p style="color: #F5E6D3; font-size: 0.9rem;">Use the ENTRY CODE above if QR doesn't scan at the gate.</p>
-      `;
-      
-      document.getElementById('ticketDetails').innerHTML = ticketHtml;
-    } else {
-      document.getElementById('ticketMessage').innerHTML = 'TICKET CONFIRMED';
-      document.getElementById('ticketDetails').innerHTML = `
-        <p style="margin: 20px 0;">Check your email for ticket details and QR code</p>
-        <p style="color: #F5E6D3; font-size: 0.9rem;">If you don't see it within 5 minutes, check your spam folder.</p>
-        <p style="color: #F5E6D3; font-size: 0.9rem;">Contact support@ftcmarch.com if you need assistance.</p>
-      `;
-    }
-  </script>
+
+        :root {
+            --primary: #0A0A0A;
+            --primary-light: #1A1A1A;
+            --accent: #C62828;
+            --accent-light: #EF5350;
+            --accent-glow: rgba(198, 40, 40, 0.4);
+            --success: #00C853;
+            --success-glow: rgba(0, 200, 83, 0.2);
+            --gold: #D4AF37;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --text-muted: #6B6B6B;
+            --border: #2A2A2A;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --gradient-accent: linear-gradient(135deg, #C62828 0%, #8B0000 100%);
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.4);
+            --shadow-accent: 0 0 30px rgba(198, 40, 40, 0.3);
+            --shadow-success: 0 0 30px rgba(0, 200, 83, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--primary-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 16px 5%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+        }
+
+        .logo-text span {
+            color: var(--accent);
+        }
+
+        /* Main Container */
+        .success-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 5%;
+        }
+
+        /* Success Header */
+        .success-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: scaleIn 0.5s ease, pulse 2s ease infinite 1s;
+        }
+
+        .success-icon i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .success-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Ticket Card */
+        .ticket-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease 0.1s backwards;
+        }
+
+        .ticket-header {
+            background: var(--gradient-accent);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .ticket-header h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .ticket-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .ticket-body {
+            padding: 24px;
+        }
+
+        .ticket-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ticket-row:last-child {
+            border-bottom: none;
+        }
+
+        .ticket-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .ticket-value {
+            font-weight: 600;
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
+        .short-code-box {
+            background: var(--primary-light);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .short-code-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .short-code {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 8px;
+            color: var(--accent);
+            font-family: monospace;
+        }
+
+        .short-code-note {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Multiple Tickets */
+        .multiple-tickets {
+            margin-top: 16px;
+        }
+
+        .ticket-item {
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .ticket-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .ticket-item-number {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .ticket-item-code {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease 0.2s backwards;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 14px;
+            background: var(--gradient-accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-accent);
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Info Section */
+        .info-section {
+            background: rgba(198, 40, 40, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            animation: fadeInUp 0.6s ease 0.3s backwards;
+        }
+
+        .info-section h4 {
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .info-section p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .email-icon {
+            color: var(--accent);
+            margin-right: 5px;
+        }
+
+        /* Loading State */
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .success-title {
+                font-size: 1.8rem;
+            }
+
+            .short-code {
+                font-size: 1.5rem;
+                letter-spacing: 4px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .ticket-header h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">F</div>
+                <div class="logo-text">FTC<span>.</span></div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Success Content -->
+    <div class="success-container" id="successContent">
+        <div class="loading-container" id="loadingState">
+            <div class="spinner"></div>
+            <p>Verifying your tickets...</p>
+        </div>
+
+        <div id="ticketContent" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Get ticket data from session storage
+        const ticketData = JSON.parse(sessionStorage.getItem('ticketData'));
+        const pendingTicket = JSON.parse(sessionStorage.getItem('pendingTicket'));
+
+        function renderSuccess() {
+            const container = document.getElementById('ticketContent');
+            const loading = document.getElementById('loadingState');
+
+            // Determine ticket info
+            let tickets = [];
+            let isMultiple = false;
+
+            if (ticketData) {
+                if (ticketData.count && ticketData.count > 1 && ticketData.tickets) {
+                    tickets = ticketData.tickets;
+                    isMultiple = true;
+                } else {
+                    const single = ticketData.tickets ? ticketData.tickets[0] : ticketData;
+                    tickets = [single];
+                }
+            } else if (pendingTicket) {
+                tickets = [{
+                    ticketId: pendingTicket.ticketId || 'N/A',
+                    name: pendingTicket.name,
+                    email: pendingTicket.email,
+                    ticketType: pendingTicket.ticketType,
+                    quantity: pendingTicket.quantity || 1,
+                    shortCode: pendingTicket.shortCode || 'N/A'
+                }];
+            }
+
+            if (tickets.length === 0) {
+                container.innerHTML = `
+                    <div class="ticket-card" style="text-align: center; padding: 40px;">
+                        <div class="success-icon" style="background: var(--accent);">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <h2>Ticket Confirmed!</h2>
+                        <p style="color: var(--text-secondary); margin-top: 16px;">Check your email for ticket details and QR code.</p>
+                        <div style="margin-top: 30px;">
+                            <a href="index.html" class="btn-primary" style="display: inline-block; min-width: 200px;">
+                                <i class="fas fa-home"></i> Return Home
+                            </a>
+                        </div>
+                    </div>
+                `;
+                loading.style.display = 'none';
+                container.style.display = 'block';
+                return;
+            }
+
+            const primaryTicket = tickets[0];
+            const totalTickets = tickets.length;
+
+            // Generate HTML
+            let ticketsHtml = '';
+
+            if (isMultiple && tickets.length > 1) {
+                ticketsHtml = `
+                    <div class="multiple-tickets">
+                        ${tickets.map((t, idx) => `
+                            <div class="ticket-item">
+                                <div class="ticket-item-header">
+                                    <span class="ticket-item-number">Ticket ${idx + 1} of ${tickets.length}</span>
+                                    <span class="ticket-item-code">${t.shortCode || t.ticketId?.slice(-6) || 'N/A'}</span>
+                                </div>
+                                <div class="ticket-row">
+                                    <span class="ticket-label">ID:</span>
+                                    <span class="ticket-value">${t.ticketId || 'N/A'}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                const shortCode = primaryTicket.shortCode || primaryTicket.ticketId?.slice(-6) || 'N/A';
+                ticketsHtml = `
+                    <div class="short-code-box">
+                        <div class="short-code-label">YOUR ENTRY CODE</div>
+                        <div class="short-code">${shortCode}</div>
+                        <div class="short-code-note">Present this code at the gate if QR doesn't scan</div>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Ticket ID</span>
+                        <span class="ticket-value">${primaryTicket.ticketId || 'N/A'}</span>
+                    </div>
+                `;
+            }
+
+            const totalAmount = tickets.reduce((sum, t) => sum + (t.price || 0), 0) + (tickets.length * 300);
+            const email = primaryTicket.email || 'your email';
+
+            container.innerHTML = `
+                <div class="success-header">
+                    <div class="success-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h1 class="success-title">Payment Successful!</h1>
+                    <p class="success-subtitle">Your ticket${totalTickets > 1 ? 's are' : ' is'} confirmed</p>
+                </div>
+
+                <div class="ticket-card">
+                    <div class="ticket-header">
+                        <h3>FTC TICKETING</h3>
+                        <h2>${totalTickets} Ticket${totalTickets > 1 ? 's' : ''} Confirmed</h2>
+                    </div>
+                    <div class="ticket-body">
+                        <div class="ticket-row">
+                            <span class="ticket-label">Name</span>
+                            <span class="ticket-value">${primaryTicket.name || 'Valued Customer'}</span>
+                        </div>
+                        <div class="ticket-row">
+                            <span class="ticket-label">Event</span>
+                            <span class="ticket-value">FTC March Madness 2026</span>
+                        </div>
+                        <div class="ticket-row">
+                            <span class="ticket-label">Date</span>
+                            <span class="ticket-value">March 7, 2026 · 6:00 PM</span>
+                        </div>
+                        <div class="ticket-row">
+                            <span class="ticket-label">Location</span>
+                            <span class="ticket-value">KODO BEACH HOUSE, Lagos</span>
+                        </div>
+                        <div class="ticket-row">
+                            <span class="ticket-label">Ticket Type</span>
+                            <span class="ticket-value">${primaryTicket.ticketType || 'WINNERS FC'}</span>
+                        </div>
+                        ${ticketsHtml}
+                        <div class="ticket-row" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                            <span class="ticket-label">Total Paid</span>
+                            <span class="ticket-value" style="color: var(--accent); font-weight: 800;">₦${totalAmount.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="index.html" class="btn-primary">
+                        <i class="fas fa-home"></i> Return Home
+                    </a>
+                    <button class="btn-secondary" onclick="window.location.href='tickets.html?email=${encodeURIComponent(email)}'">
+                        <i class="fas fa-eye"></i> View All Tickets
+                    </button>
+                </div>
+
+                <div class="info-section">
+                    <h4><i class="fas fa-envelope email-icon"></i> Check Your Email</h4>
+                    <p>We've sent your ticket${totalTickets > 1 ? 's' : ''} with QR code${totalTickets > 1 ? 's' : ''} to <strong>${email}</strong></p>
+                    <p style="font-size: 0.8rem; margin-top: 8px;">
+                        <i class="fas fa-clock"></i> If you don't see it within 5 minutes, check your spam folder
+                    </p>
+                </div>
+            `;
+
+            loading.style.display = 'none';
+            container.style.display = 'block';
+        }
+
+        // Clear session storage after displaying (optional)
+        setTimeout(() => {
+            sessionStorage.removeItem('ticketData');
+            sessionStorage.removeItem('pendingTicket');
+        }, 5000);
+
+        renderSuccess();
+    </script>
 </body>
 </html>

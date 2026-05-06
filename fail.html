@@ -1,46 +1,507 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FTC · MARCH MADNESS · PAYMENT FAILED</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Payment Failed · FTC Ticketing</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0A0A0A;
+            --primary-light: #1A1A1A;
+            --accent: #C62828;
+            --accent-light: #EF5350;
+            --accent-glow: rgba(198, 40, 40, 0.4);
+            --warning: #FF9800;
+            --warning-glow: rgba(255, 152, 0, 0.2);
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --text-muted: #6B6B6B;
+            --border: #2A2A2A;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --gradient-accent: linear-gradient(135deg, #C62828 0%, #8B0000 100%);
+            --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.4);
+            --shadow-accent: 0 0 30px rgba(198, 40, 40, 0.3);
+            --shadow-warning: 0 0 30px rgba(255, 152, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--primary-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 16px 5%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+        }
+
+        .logo-text span {
+            color: var(--accent);
+        }
+
+        /* Main Container */
+        .fail-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 60px 5%;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Fail Header */
+        .fail-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .fail-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(198, 40, 40, 0.15);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .fail-icon i {
+            font-size: 3rem;
+            color: var(--accent);
+            animation: shake 0.5s ease 0.3s;
+        }
+
+        .fail-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .fail-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Alert Card */
+        .alert-card {
+            background: rgba(198, 40, 40, 0.05);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease 0.1s backwards;
+        }
+
+        .alert-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .alert-title i {
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .alert-title h3 {
+            font-weight: 600;
+        }
+
+        .alert-message {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .reason-box {
+            background: var(--primary-light);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .reason-box p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .reason-box strong {
+            color: var(--accent);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease 0.2s backwards;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 14px;
+            background: var(--gradient-accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-accent);
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Help Section */
+        .help-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            animation: fadeInUp 0.6s ease 0.3s backwards;
+        }
+
+        .help-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .help-title i {
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .help-title h4 {
+            font-weight: 700;
+        }
+
+        .contact-options {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .contact-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--primary-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Loading/Redirect */
+        .redirect-note {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 6px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .fail-title {
+                font-size: 1.8rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .contact-options {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
-<body class="status-page">
+<body>
 
-  <header class="logo-header">
-    <div class="logo-group">
-      <img src="pictures/logo.jpeg" alt="FTC MARCH MADNESS" class="logo-img">
-      <div class="logo-text-wrapper">
-        <span class="logo-ftc">FTC</span>
-        <span class="logo-presents">presents</span>
-        <span class="logo-event">MARCH MADNESS</span>
-      </div>
-    </div>
-  </header> 
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">F</div>
+                <div class="logo-text">FTC<span>.</span></div>
+            </a>
+        </div>
+    </nav>
 
-  <div class="status-screen fail">
-    <div class="status-icon">
-      ⚡
-    </div>
-    <h1>PAYMENT<br>INTERRUPTED</h1>
-    <div class="status-message">
-      DON'T MISS OUT · WINNERS FC · ₦8,000<br>
-      LIMITED SPOTS AVAILABLE — TRY AGAIN
-    </div>
-    <p class="support-line"><i class="fas fa-exclamation-triangle"></i> NEED HELP? CONTACT SUPPORT</p>
-    <a href="buy.html" class="btn status-btn retry-btn">
-      <i class="fas fa-redo"></i> TRY AGAIN
-    </a>
-    <p class="back-event">
-      <a href="index.html"><i class="fas fa-arrow-left"></i> BACK TO EVENT</a>
-    </p>
-  </div>
+    <!-- Fail Content -->
+    <div class="fail-container" id="failContent">
+        <div class="fail-header">
+            <div class="fail-icon">
+                <i class="fas fa-times"></i>
+            </div>
+            <h1 class="fail-title">Payment Failed</h1>
+            <p class="fail-subtitle">Your transaction could not be completed</p>
+        </div>
 
-  <footer>
-    <p>FTC · MARCH MADNESS · support@ftcmarch.com · +234 8082420342</p>
-  </footer>
+        <div class="alert-card">
+            <div class="alert-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>What happened?</h3>
+            </div>
+            <div class="alert-message" id="errorMessage">
+                Your payment was not successful. This could be due to insufficient funds, incorrect card details, or a network issue.
+            </div>
+            <div class="reason-box" id="reasonBox">
+                <p><strong>Possible reasons:</strong></p>
+                <p>• Insufficient balance in your account</p>
+                <p>• Incorrect card details entered</p>
+                <p>• Bank declined the transaction</p>
+                <p>• Network timeout or connection issue</p>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-primary" onclick="window.location.href='buy.html'">
+                <i class="fas fa-redo-alt"></i> Try Again
+            </button>
+            <button class="btn-secondary" onclick="window.location.href='index.html'">
+                <i class="fas fa-home"></i> Return Home
+            </button>
+        </div>
+
+        <div class="help-section">
+            <div class="help-title">
+                <i class="fas fa-headset"></i>
+                <h4>Need assistance?</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
+                Our support team is ready to help you complete your purchase.
+            </p>
+            <div class="contact-options">
+                <a href="mailto:support@ftcmarch.com" class="contact-btn">
+                    <i class="fas fa-envelope"></i> Email Support
+                </a>
+                <a href="https://wa.me/2349079681750" target="_blank" class="contact-btn">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+
+        <div class="redirect-note" id="redirectNote">
+            <span class="spinner"></span> Redirecting to ticket selection in <span id="countdown">10</span> seconds
+        </div>
+    </div>
+
+    <script>
+        // Get reason from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const reason = urlParams.get('reason');
+        const errorMessage = document.getElementById('errorMessage');
+        const reasonBox = document.getElementById('reasonBox');
+
+        // Customize message based on reason
+        if (reason === 'verification_failed') {
+            errorMessage.innerHTML = 'We couldn\'t verify your payment. This may be a temporary issue with the payment gateway.';
+            reasonBox.innerHTML = `
+                <p><strong>What to do:</strong></p>
+                <p>• Wait a few minutes and try again</p>
+                <p>• Check if your card has sufficient funds</p>
+                <p>• Try using a different payment method</p>
+                <p>• Contact your bank to ensure online transactions are enabled</p>
+            `;
+        } else if (reason === 'network_error') {
+            errorMessage.innerHTML = 'A network error occurred while processing your payment. Please check your internet connection.';
+            reasonBox.innerHTML = `
+                <p><strong>What to do:</strong></p>
+                <p>• Check your internet connection</p>
+                <p>• Try switching to a different network</p>
+                <p>• Refresh the page and try again</p>
+                <p>• If the issue persists, contact support</p>
+            `;
+        } else if (reason === 'no_reference') {
+            errorMessage.innerHTML = 'We couldn\'t find a valid payment reference. This may be a technical issue.';
+            reasonBox.innerHTML = `
+                <p><strong>What to do:</strong></p>
+                <p>• Return to the ticket page and try again</p>
+                <p>• Clear your browser cache and retry</p>
+                <p>• Contact support if the problem continues</p>
+            `;
+        }
+
+        // Auto-redirect countdown
+        let secondsLeft = 10;
+        const countdownEl = document.getElementById('countdown');
+        const redirectNote = document.getElementById('redirectNote');
+
+        const interval = setInterval(() => {
+            secondsLeft--;
+            if (countdownEl) countdownEl.textContent = secondsLeft;
+            
+            if (secondsLeft <= 0) {
+                clearInterval(interval);
+                window.location.href = 'buy.html';
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
